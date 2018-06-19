@@ -1,0 +1,55 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: es
+  labels:
+    app: elasticsearch
+spec:
+  serviceName: elasticsearch
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      initContainers:
+      - name: init-sysctl
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command: ["sysctl", "-w", "vm.max_map_count=262144"]
+        securityContext:
+          privileged: true
+      containers:
+      - name: es
+        securityContext:
+          capabilities:
+            add:
+              - IPC_LOCK
+        image: docker.elastic.co/elasticsearch/elasticsearch:5.4.1
+        env:
+        - name: KUBERNETES_CA_CERTIFICATE_FILE
+          value: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: "CLUSTER_NAME"
+          value: "elasticaliopen"
+        - name: "DISCOVERY_SERVICE"
+          value: "elasticsearch"
+        - name: NETWORK_HOST
+          value: "_eth0_"
+        ports:
+        - containerPort: 9200
+          name: http
+          protocol: TCP
+        - containerPort: 9300
+          name: transport
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: index
+      volumes:
+      - name: index
+        persistentVolumeClaim:
+          claimName: index
