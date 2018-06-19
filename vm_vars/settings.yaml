@@ -1,0 +1,8 @@
+# VM configuration
+
+image: Ubuntu 16.04 LTS
+vlan_name: kube_vlan
+datacenter: FR-SD5
+node_cpu: 2
+node_mem: 4096
+node_disk: 20

@@ -1,0 +1,92 @@
+- name: test-deployment
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - "vm_vars/credentials.yaml"
+    - "vm_vars/settings.yaml"
+
+  tasks:
+  - gandi_vlan:
+      gandi_api_key: "{{ gandi_api_key }}"
+      name: "{{ vlan_name }}"
+      datacenter: "{{ datacenter }}"
+      gateway: 192.168.0.254
+      subnet: 192.168.0.0/24
+    tags: vlan
+
+  - gandi_vps:
+      gandi_api_key: "{{ gandi_api_key }}"
+      name: bastion
+      machine_type: custom
+      image: "{{ image }}"
+      datacenter: "{{ datacenter }}"
+      sshkey_ids: [41934]
+      cores: 1
+      memory: 512
+      disk: 5
+      interfaces: {'publics': [{'ipv4': 'auto'}], 'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': '192.168.0.254'}]}
+      state: running
+      farm: bastion_node
+    tags: bastion
+
+  - gandi_vps:
+      gandi_api_key: "{{ gandi_api_key }}"
+      name: master
+      machine_type: custom
+      image: "{{ image }}"
+      datacenter: "{{ datacenter }}"
+      sshkey_ids: [41934]
+      cores: "{{ node_cpu }}"
+      memory: "{{ node_mem }}"
+      disk: "{{ node_disk }}"
+      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': '192.168.0.1'}]}
+      state: running
+      farm: master_node
+    tags: ['master', 'kube_cluster']
+
+  - gandi_vps:
+      gandi_api_key: "{{ gandi_api_key }}"
+      name: node0
+      image: "{{ image }}"
+      machine_type: custom
+      datacenter: "{{ datacenter }}"
+      sshkey_ids: [41934]
+      cores: "{{ node_cpu }}"
+      memory: "{{ node_mem }}"
+      disk: "{{ node_disk }}"
+      interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
+      state: running
+      farm: worker_node
+    tags: ['worker', 'kube_cluster']
+
+  - gandi_vps:
+      gandi_api_key: "{{ gandi_api_key }}"
+      name: node1
+      image: "{{ image }}"
+      machine_type: custom
+      datacenter: "{{ datacenter }}"
+      sshkey_ids: [41934]
+      cores: "{{ node_cpu }}"
+      memory: "{{ node_mem }}"
+      disk: "{{ node_disk }}"
+      interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
+      state: running
+      farm: worker_node
+    tags: ['worker', 'kube_cluster']
+
+  - gandi_vps:
+      gandi_api_key: "{{ gandi_api_key }}"
+      name: node2
+      image: "{{ image }}"
+      machine_type: custom
+      datacenter: "{{ datacenter }}"
+      sshkey_ids: [41934]
+      cores: "{{ node_cpu }}"
+      memory: "{{ node_mem }}"
+      disk: "{{ node_disk }}"
+      interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
+      state: running
+      farm: worker_node
+    tags: ['worker', 'kube_cluster']
