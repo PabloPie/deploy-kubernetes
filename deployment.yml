@@ -1,0 +1,33 @@
+- hosts: bastion_node
+  become: yes
+  remote_user: root
+  roles:
+    - bastion
+  tags: infra
+
+- hosts: master_node
+  become: yes
+  remote_user: root
+  roles:
+    - common
+    - docker
+    - kube
+    - master
+  tags: infra
+
+- hosts: worker_node
+  become: yes
+  remote_user: root
+  roles:
+    - common
+    - docker
+    - kube
+    - worker
+  tags: infra
+
+- hosts: master_node
+  become: yes
+  remote_user: root
+  roles:
+    - caliopen
+  tags: application

@@ -1,0 +1,23 @@
+- name: install dependencies
+  apt: package={{ item }} state=installed update_cache=yes
+  with_items:
+    - apt-transport-https
+    - curl
+
+- name: add apt key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Add kubernetes apt repo
+  apt_repository:
+    repo: 'deb http://apt.kubernetes.io/ kubernetes-xenial main'
+    filename: kubernetes
+    state: present
+
+- name: install kube utilities
+  apt: package={{ item }} update_cache=yes
+  with_items:
+    - kubelet
+    - kubeadm
+    - kubectl

@@ -1,0 +1,6 @@
+- name: reset before join
+  command: kubeadm reset
+  when: kubeadm_reset
+
+- name: join k8s cluster
+  command: kubeadm join --token {{ kube_token }} {{ master_private_ip }}:6443 --discovery-token-unsafe-skip-ca-verification

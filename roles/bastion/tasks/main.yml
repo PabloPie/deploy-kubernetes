@@ -1,0 +1,18 @@
+- name: update and upgrade
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Install dependencies
+  action: apt pkg={{item}} state=installed update_cache=yes
+  with_items:
+       - curl
+       - iptables
+       - fail2ban
+       - iptables-persistent
+
+- name: enable ip forwarding
+  shell: sysctl -w net.ipv4.ip_forward=1
+
+- name: enable SNAT
+  shell: iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to {{ ansible_eth0.ipv4.address }}

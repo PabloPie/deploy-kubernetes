@@ -1,0 +1,36 @@
+- name: reset kubeadm
+  command: kubeadm reset
+  when: kubeadm_reset
+
+- name: kubeadm init
+  command: kubeadm init --token {{ kube_token }} --apiserver-advertise-address={{ master_private_ip }}
+
+- name: apiserver is active
+  wait_for:
+    port: 6443
+    delay: 10
+    timeout: 300
+
+- name: create .kube dir
+  file:
+    path: ~{{ ansible_user }}/.kube
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: copy config file to HOME/.kube dir
+  copy: 
+    src: /etc/kubernetes/admin.conf
+    dest: ~{{ ansible_user }}/.kube/config
+    remote_src: yes
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    force: yes
+    mode: 0400
+
+- name: get kubernetes version
+  shell: kubectl version | base64 | tr -d '\n'
+  register: kube_version
+
+- name: install weave pod network
+  command: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version={{ kube_version.stdout }}"

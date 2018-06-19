@@ -1,0 +1,20 @@
+- name: install ssh authorized keys
+  template: src=ssh_authorized_keys dest=/root/.ssh/authorized_keys mode=0600
+
+- name: Configure default ipv4 gateway
+  shell: ip route add default via 192.168.0.254
+  ignore_errors: yes
+
+- name: add gandi apt key
+  apt_key:
+    url: https://mirrors.gandi.net/gandi/pubkey
+    id: D9A579D6BB859933
+    state: present
+
+- name: update and upgrade
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: turn off swap
+  command: swapoff -a

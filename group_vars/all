@@ -1,0 +1,7 @@
+kube_token: l1u3tg.i54d3l3zi46znuuy
+master_private_ip: "{{ hostvars['master']['private_ips'][0] }}"
+bastion_public_ip: "{{ hostvars['bastion']['public_ips'][0] }}"
+ansible_user: root
+kubeadm_reset: True
+caliopen_config_path: "/etc/caliopen/configs"
+yaml_url: "https://raw.githubusercontent.com/CaliOpen/Caliopen/feature/kubernetes-dev-env/devtools/kubernetes"

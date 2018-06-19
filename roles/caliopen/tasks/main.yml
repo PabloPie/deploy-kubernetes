@@ -1,0 +1,75 @@
+- name: Ensures {{ caliopen_config_path }} dir exists
+  file: path={{ caliopen_config_path }} state=directory
+
+- name: copy configs
+  copy:
+    src: "{{ item }}"
+    dest: "{{ caliopen_config_path }}"
+    owner: "root"
+    mode: 0600
+  with_fileglob:
+    - "templates/configs/*"
+
+- name: create caliopen configs
+  shell: kubectl create configmap caliopen-config --from-file={{ caliopen_config_path }}
+  ignore_errors: yes
+
+- name: create dns config
+  shell: kubectl create -f "{{ yaml_url }}/configs/dns-config.yaml"
+  ignore_errors: yes
+
+- name: create services
+  shell: kubectl create -f "{{ yaml_url }}/services/{{ item }}-service.yaml"
+  with_items:
+    - api
+    - apiv1
+    - broker
+    - cassandra
+    - elasticsearch
+    - frontend
+    - minio
+    - nats
+    - redis
+    - smtp
+
+- name: create pvc
+  shell: kubectl create -f {{ yaml_url }}/volumeclaims/{{ item }}-persistentvolumeclaim.yaml
+  with_items:
+    - db
+    - index
+    - store
+
+- name: create storage deployments
+  shell: kubectl create -f {{ yaml_url }}/statefulsets/{{ item }}-statefulset.yaml
+  with_items:
+    - cassandra
+    - elasticsearch
+    - minio
+  tags: storage
+
+- name: create basic deployments
+  shell: kubectl create -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  with_items:
+    - redis
+    - nats
+    - smtp
+
+- name: create go app deployments
+  shell: kubectl create -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  with_items:
+    - broker
+    - api
+  tags: go
+
+- name: create python app deployments
+  shell: kubectl create -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  with_items:
+    - message-handler
+    - apiv1
+  tags: python
+
+- name: create frontend app deployments
+  shell: kubectl create -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  with_items:
+    - frontend
+  tags: frontend
