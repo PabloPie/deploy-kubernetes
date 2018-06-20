@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: Caliopen
+spec:
+  rules:
+  - host: alpha.caliopen.org
+    http:
+      paths:
+      - backend:
+          serviceName: frontend
+          servicePort: 4000
+  - host: api.caliopen.org
+    http:
+      paths:
+      - backend:
+          serviceName: api
+          servicePort: 31415
