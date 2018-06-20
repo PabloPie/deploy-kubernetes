@@ -8,5 +8,3 @@ spec:
   ports:
   - name: "smtp"
     port: 2500
-  - name: "smtp1"
-    port: 8888
