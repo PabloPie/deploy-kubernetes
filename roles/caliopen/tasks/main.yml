@@ -15,22 +15,28 @@
   ignore_errors: yes
 
 - name: create dns config
-  shell: kubectl create -f "{{ yaml_url }}/configs/dns-config.yaml"
+  shell: kubectl create -f {{ yaml_url }}/configs/dns-config.yaml
   ignore_errors: yes
 
 - name: create services
-  shell: kubectl create -f "{{ yaml_url }}/services/{{ item }}-service.yaml"
+  shell: kubectl create -f {{ yaml_url }}/services/{{ item }}-service.yaml
   with_items:
     - api
     - apiv1
     - broker
-    - cassandra
-    - elasticsearch
     - frontend
-    - minio
     - nats
     - redis
     - smtp
+    - nginx
+
+- name: create headless services
+  shell: kubectl create -f {{ yaml_url }}/services/{{ item }}-service.yaml
+  with_items:
+    - cassandra
+    - elasticsearch
+    - minio
+  tags: storage
 
 - name: create pvc
   shell: kubectl create -f {{ yaml_url }}/volumeclaims/{{ item }}-persistentvolumeclaim.yaml
@@ -38,6 +44,7 @@
     - db
     - index
     - store
+  tags: storage
 
 - name: create storage deployments
   shell: kubectl create -f {{ yaml_url }}/statefulsets/{{ item }}-statefulset.yaml
@@ -73,3 +80,16 @@
   with_items:
     - frontend
   tags: frontend
+
+- name: setup ingress controller and rules
+  shell: kubectl apply -f {{ yaml_url }}/ingress/{{ item }}-ingress.yaml
+  with_items:
+    - caliopen
+    - setup
+  tags: ingress
+
+- name: create services
+  shell: kubectl create -f {{ yaml_url }}/services/{{ item }}-service.yaml
+  with_items:
+    - nginx
+  tags: ingress
