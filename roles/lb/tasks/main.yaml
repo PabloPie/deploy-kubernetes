@@ -1,0 +1,10 @@
+- name: install haproxy
+  apt: package={{ item }} state=installed update_cache=yes
+  with_items:
+    - haproxy
+
+- name: copy config file
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+
+- name: restart haproxy service
+  shell: service haproxy restart
