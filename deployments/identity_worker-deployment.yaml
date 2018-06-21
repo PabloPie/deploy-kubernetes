@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity_worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity_worker
+  template:
+    metadata:
+      labels:
+        type: identity_worker
+        tier: remote-identities
+        app: identity_worker
+    spec:
+      containers:
+      - image: public-registry.caliopen.org/identity_worker
+        name: identity_worker
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/caliopen
+      volumes:
+      - name: config-volume
+        configMap:
+          name: caliopen-config
+          items:
+          - key: caliopen-imap-worker.yaml
+            path: caliopen-imap-worker.yaml
+      restartPolicy: Always

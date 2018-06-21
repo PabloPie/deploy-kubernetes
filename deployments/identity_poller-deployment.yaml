@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity_poller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity_poller
+  template:
+    metadata:
+      labels:
+        type: identity_poller
+        tier: remote-identities
+        app: identity_poller
+    spec:
+      containers:
+      - image: public-registry.caliopen.org/identity_poller
+        name: identity_poller
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/caliopen
+      volumes:
+      - name: config-volume
+        configMap:
+          name: caliopen-config
+          items:
+          - key: caliopen-IDs-poller.yaml
+            path: caliopen-IDs-poller.yaml
+      restartPolicy: Always
