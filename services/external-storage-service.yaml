@@ -22,7 +22,6 @@
       - name: es
         protocol: "TCP"
         port: 9200
-        targetPort: 9200
     selector: {}
 ---
 
@@ -35,8 +34,6 @@
       - name: minio
         protocol: "TCP"
         port: 9090
-        targetPort: 9090
-        nodePort: 0
     selector: {}
 ---
 
@@ -67,7 +64,6 @@ subsets:
     - name: es
       protocol: "TCP"
       port: 9200
-      targetPort: 9200
 ---
 
 kind: Endpoints
@@ -81,5 +77,3 @@ subsets:
       - name: minio
         protocol: "TCP"
         port: 9090
-        targetPort: 9090
-        nodePort: 0
