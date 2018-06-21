@@ -5,3 +5,4 @@ ansible_user: root
 kubeadm_reset: True
 caliopen_config_path: "/etc/caliopen/configs"
 yaml_url: "https://raw.githubusercontent.com/PabloPie/deploy-kubernetes/master"
+external: True

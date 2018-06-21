@@ -1,0 +1,85 @@
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: cassandra
+  spec:
+    ports:
+      - port: 9042
+        name: "cql"
+      - port: 9160
+        name: "thrift"
+      - port: 7000
+        name: "intra-node"
+  selector: {}
+---
+
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: elasticsearch
+  spec:
+    ports:
+      - name: es
+        protocol: "TCP"
+        port: 9200
+        targetPort: 9200
+  selector: {}
+---
+
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: minio
+  spec:
+    ports:
+      - name: minio
+        protocol: "TCP"
+        port: 9090
+        targetPort: 9090
+        nodePort: 0
+  selector: {}
+---
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: cassandra 
+subsets: 
+  - addresses:
+      - ip: 192.168.0.10 
+    ports:
+      - port: 9042
+        name: "cql"
+      - port: 9160
+        name: "thrift"
+      - port: 7000
+        name: "intra-node"
+---
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: elasticsearch 
+subsets: 
+  - addresses:
+      - ip: 192.168.0.10  
+    ports:
+    - name: es
+      protocol: "TCP"
+      port: 9200
+      targetPort: 9200
+---
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: minio 
+subsets: 
+  - addresses:
+      - ip: 192.168.0.10  
+    ports:
+      - name: minio
+        protocol: "TCP"
+        port: 9090
+        targetPort: 9090
+        nodePort: 0

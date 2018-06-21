@@ -30,6 +30,11 @@
     - smtp
     - nginx
 
+- name: create external service
+  shell: kubectl create -f {{ yaml_url }}/services/external-storage-service.yaml
+  tags: external
+  when: external
+
 - name: create headless services
   shell: kubectl create -f {{ yaml_url }}/services/{{ item }}-service.yaml
   with_items:
@@ -37,6 +42,7 @@
     - elasticsearch
     - minio
   tags: storage
+  when: not external
 
 - name: create pvc
   shell: kubectl create -f {{ yaml_url }}/volumeclaims/{{ item }}-persistentvolumeclaim.yaml
@@ -45,6 +51,7 @@
     - index
     - store
   tags: storage
+  when: not external
 
 - name: create storage deployments
   shell: kubectl create -f {{ yaml_url }}/statefulsets/{{ item }}-statefulset.yaml
@@ -53,6 +60,7 @@
     - elasticsearch
     - minio
   tags: storage
+  when: not external
 
 - name: create basic deployments
   shell: kubectl create -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
