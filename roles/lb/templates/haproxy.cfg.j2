@@ -55,10 +55,10 @@ backend front
 	option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
 	http-check expect status 200
 	http-request set-header Host alpha.caliopen.org
-	server master 192.168.0.1:30011 check
-	server node0  192.168.0.2:30011 check
-	server node1  192.168.0.3:30011 check
-	server node2  192.168.0.4:30011 check
+	server master 192.168.0.1:30080 check
+	server node0  192.168.0.2:30080 check
+	server node1  192.168.0.3:30080 check
+	server node2  192.168.0.4:30080 check
 
 backend api
 	mode http
@@ -66,10 +66,10 @@ backend api
 	option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
 	http-check expect status 200
 	http-request set-header Host api.caliopen.org
-	server master 192.168.0.1:30011 check
-	server node0  192.168.0.2:30011 check
-	server node1  192.168.0.3:30011 check
-	server node2  192.168.0.4:30011 check
+	server master 192.168.0.1:30080 check
+	server node0  192.168.0.2:30080 check
+	server node1  192.168.0.3:30080 check
+	server node2  192.168.0.4:30080 check
 
 backend apiv1
 	mode http
@@ -77,7 +77,7 @@ backend apiv1
 	option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
 	http-check expect status 200
 	http-request set-header Host apiv1.caliopen.org
-	server master 192.168.0.1:30011 check
-	server node0  192.168.0.2:30011 check
-	server node1  192.168.0.3:30011 check
-	server node2  192.168.0.4:30011 check
+	server master 192.168.0.1:30080 check
+	server node0  192.168.0.2:30080 check
+	server node1  192.168.0.3:30080 check
+	server node2  192.168.0.4:30080 check
