@@ -4,7 +4,7 @@ metadata:
   name: minio
 spec:
   serviceName: minio
-  replicas: 5
+  replicas: 3
   template:
     metadata:
       labels:
@@ -12,11 +12,11 @@ spec:
     spec:
       containers:
       - name: minio
-        env:
-        - name: MINIO_ACCESS_KEY
-          value: "GWEDQM67MIQ2E5QGV8O8" # NOT THE ACTUAL ACCESS KEY
-        - name: MINIO_SECRET_KEY
-          value: "Iws33XVjElFFbCfDqpoPbMvktCZsAOCC7FivMKTg" # NOT THE ACTUAL SECRET KEY
+        # env:
+        # - name: MINIO_ACCESS_KEY
+        #   value: "GWEDQM67MIQ2E5QGV8O8" # NOT THE ACTUAL ACCESS KEY
+        # - name: MINIO_SECRET_KEY
+        #   value: "Iws33XVjElFFbCfDqpoPbMvktCZsAOCC7FivMKTg" # NOT THE ACTUAL SECRET KEY
         image: minio/minio
         args:
         - server
@@ -45,7 +45,7 @@ spec:
           claimName: store
       - name: config-volume
         configMap:
-          name: minio-config
+          name: caliopen-config
           items:
           - key: config.json
             path: config.json

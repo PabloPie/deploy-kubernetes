@@ -6,7 +6,7 @@ metadata:
     app: elasticsearch
 spec:
   serviceName: elasticsearch
-  replicas: 5
+  replicas: 3
   template:
     metadata:
       labels:
@@ -27,6 +27,12 @@ spec:
               - IPC_LOCK
         image: docker.elastic.co/elasticsearch/elasticsearch:5.4.1
         env:
+        - name: xpack.security.enabled
+          value: "false"
+        - name: xpack.monitoring.enabled
+          value: "false"
+        - name: ES_JAVA_OPTS
+          value: "-Xms512M -Xmx512M"
         - name: KUBERNETES_CA_CERTIFICATE_FILE
           value: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         - name: NAMESPACE
@@ -37,8 +43,6 @@ spec:
           value: "elasticaliopen"
         - name: "DISCOVERY_SERVICE"
           value: "elasticsearch"
-        - name: NETWORK_HOST
-          value: "_eth0_"
         ports:
         - containerPort: 9200
           name: http
