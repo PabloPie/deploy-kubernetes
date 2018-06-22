@@ -10,20 +10,15 @@
   tasks:
   - gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
-      name: nodetest
+      instance_names: node,node0,node1,node2,node3,node4,master,master0,master1,master2
       datacenter: "{{ datacenter }}"
       state: deleted
-    tags: one
-
-  - gandi_vps:
-      gandi_api_key: "{{ gandi_api_key }}"
-      instance_names: node,node0,node1,node2,node3,node4,master,master0,master1,master2,bastion
-      datacenter: "{{ datacenter }}"
-      state: deleted
+    tags: kube_cluster
 
   - gandi_vlan:
       gandi_api_key: "{{ gandi_api_key }}"
       name: "{{ vlan_name }}"
       datacenter: "{{ datacenter }}"
       state: deleted
+    tags: vlan
 

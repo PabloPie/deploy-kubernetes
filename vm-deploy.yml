@@ -44,7 +44,9 @@
       interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': '192.168.0.1'}]}
       state: running
       farm: master_node
-    tags: ['master', 'kube_cluster']
+    tags:
+      - master
+      - kube_cluster
 
   - gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
@@ -56,10 +58,13 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
+      extra_disks: [{'name': 'vol0', 'size': 10}]
       interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
       state: running
       farm: worker_node
-    tags: ['worker', 'kube_cluster']
+    tags:
+      - master
+      - kube_cluster
 
   - gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
@@ -71,10 +76,13 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
+      extra_disks: [{'name': 'vol1', 'size': 10}]
       interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
       state: running
       farm: worker_node
-    tags: ['worker', 'kube_cluster']
+    tags:
+      - master
+      - kube_cluster
 
   - gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
@@ -86,7 +94,25 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
+      extra_disks: [{'name': 'vol2', 'size': 10}]
       interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
       state: running
       farm: worker_node
-    tags: ['worker', 'kube_cluster']
+    tags:
+      - master
+      - kube_cluster
+
+  - gandi_vps:
+      gandi_api_key: "{{ gandi_api_key }}"
+      name: escas1
+      image: "Debian 8"
+      machine_type: custom
+      datacenter: "{{ datacenter }}"
+      sshkey_ids: [41934]
+      cores: "{{ node_cpu }}"
+      memory: 6144
+      disk: 50
+      farm: storage_node
+      state: running
+      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': '192.168.0.10'}]}
+    when: external

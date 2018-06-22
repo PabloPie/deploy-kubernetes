@@ -3,7 +3,9 @@
   remote_user: root
   roles:
     - bastion
-  tags: infra
+  tags:
+    - infra
+    - bastion
 
 - hosts: master_node
   become: yes

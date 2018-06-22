@@ -4,7 +4,7 @@ metadata:
   name: minio
 spec:
   serviceName: minio
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:
@@ -12,18 +12,14 @@ spec:
     spec:
       containers:
       - name: minio
-        # env:
-        # - name: MINIO_ACCESS_KEY
-        #   value: "GWEDQM67MIQ2E5QGV8O8" # NOT THE ACTUAL ACCESS KEY
-        # - name: MINIO_SECRET_KEY
-        #   value: "Iws33XVjElFFbCfDqpoPbMvktCZsAOCC7FivMKTg" # NOT THE ACTUAL SECRET KEY
+        env:
+        - name: MINIO_ACCESS_KEY
+          value: "CALIOPEN_ACCESS_KEY_" # NOT THE ACTUAL ACCESS KEY
+        - name: MINIO_SECRET_KEY
+          value: "CALIOPEN_SECRET_KEY_BE_GOOD_AND_LIVE_OLD" # NOT THE ACTUAL SECRET KEY
         image: minio/minio
         args:
         - server
-        - http://minio-0.minio.default.svc.cluster.local/export
-        - http://minio-1.minio.default.svc.cluster.local/export
-        - http://minio-2.minio.default.svc.cluster.local/export
-        - http://minio-3.minio.default.svc.cluster.local/export
         - --address
         - :9090
         - -C
@@ -36,16 +32,7 @@ spec:
         volumeMounts:
         - mountPath: /export
           name: store
-        - mountPath: /configs/minio/config.json
-          name: config-volume
-          subPath: config.json
       volumes:
       - name: store
         persistentVolumeClaim:
           claimName: store
-      - name: config-volume
-        configMap:
-          name: caliopen-config
-          items:
-          - key: config.json
-            path: config.json

@@ -10,16 +10,32 @@
   with_fileglob:
     - "templates/configs/*"
 
+- name: create localstorage
+  shell: kubectl apply -f {{ yaml_url }}/storageclass/{{ item }}-storageclass.yaml
+  with_items:
+    - localstorage
+  tags: storage
+  when: not external
+
+- name: create persistent volumes
+  shell: kubectl apply -f {{ yaml_url }}/persistentvolumes/{{ item }}-persistentvolume.yaml
+  with_items:
+    - node0
+    - node1
+    - node2
+  tags: storage
+  when: not external
+
 - name: create caliopen configs
   shell: kubectl create configmap caliopen-config --from-file={{ caliopen_config_path }}
   ignore_errors: yes
 
 - name: create dns config
-  shell: kubectl create -f {{ yaml_url }}/configs/dns-config.yaml
+  shell: kubectl apply -f {{ yaml_url }}/configs/dns-config.yaml
   ignore_errors: yes
 
 - name: create services
-  shell: kubectl create -f {{ yaml_url }}/services/{{ item }}-service.yaml
+  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
   with_items:
     - api
     - apiv1
@@ -28,15 +44,14 @@
     - nats
     - redis
     - smtp
-    - nginx
 
 - name: create external service
-  shell: kubectl create -f {{ yaml_url }}/services/external-storage-service.yaml
+  shell: kubectl apply -f {{ yaml_url }}/services/external-storage-service.yaml
   tags: external
   when: external
 
 - name: create headless services
-  shell: kubectl create -f {{ yaml_url }}/services/{{ item }}-service.yaml
+  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
   with_items:
     - cassandra
     - elasticsearch
@@ -45,7 +60,7 @@
   when: not external
 
 - name: create pvc
-  shell: kubectl create -f {{ yaml_url }}/volumeclaims/{{ item }}-persistentvolumeclaim.yaml
+  shell: kubectl apply -f {{ yaml_url }}/volumeclaims/{{ item }}-persistentvolumeclaim.yaml
   with_items:
     - db
     - index
@@ -54,7 +69,7 @@
   when: not external
 
 - name: create storage deployments
-  shell: kubectl create -f {{ yaml_url }}/statefulsets/{{ item }}-statefulset.yaml
+  shell: kubectl apply -f {{ yaml_url }}/statefulsets/{{ item }}-statefulset.yaml
   with_items:
     - cassandra
     - elasticsearch
@@ -63,41 +78,46 @@
   when: not external
 
 - name: create basic deployments
-  shell: kubectl create -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
   with_items:
     - redis
     - nats
     - smtp
 
 - name: create go app deployments
-  shell: kubectl create -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
   with_items:
     - broker
     - api
   tags: go
 
 - name: create python app deployments
-  shell: kubectl create -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
   with_items:
     - message-handler
     - apiv1
   tags: python
 
 - name: create frontend app deployments
-  shell: kubectl create -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
   with_items:
     - frontend
   tags: frontend
 
-- name: setup ingress controller and rules
+- name: setup ingress controller and default backend
   shell: kubectl apply -f {{ yaml_url }}/ingress/{{ item }}-ingress.yaml
   with_items:
-    - caliopen
     - setup
   tags: ingress
 
 - name: create services
-  shell: kubectl create -f {{ yaml_url }}/services/{{ item }}-service.yaml
+  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
   with_items:
     - nginx
+  tags: ingress
+
+- name: create ingress rules
+  shell: kubectl apply -f {{ yaml_url }}/ingress/{{ item }}-ingress.yaml
+  with_items:
+    - caliopen
   tags: ingress
