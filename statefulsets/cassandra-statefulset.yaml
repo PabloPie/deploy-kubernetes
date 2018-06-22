@@ -74,8 +74,8 @@ spec:
         #     - /bin/bash
         #     - -c
         #     - /ready-probe.sh
-          initialDelaySeconds: 15
-          timeoutSeconds: 5
+        #   initialDelaySeconds: 15
+        #   timeoutSeconds: 5
         volumeMounts:
         - name: db
           mountPath: /var/lib/scylla
