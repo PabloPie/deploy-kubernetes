@@ -16,5 +16,9 @@ spec:
     port: 443
     targetPort: 443
     protocol: TCP
+  - name: health
+    nodePort: 30880
+    port: 18080
+    targetPort: 18080
   selector:
     app: ingress-nginx
