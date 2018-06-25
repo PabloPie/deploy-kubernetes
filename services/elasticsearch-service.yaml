@@ -9,5 +9,7 @@ spec:
   selector:
     app: elasticsearch
   ports:
-  - name: "elasticsearch"
+  - name: "http"
     port: 9200
+  - name: "transport"
+    port: 9300
