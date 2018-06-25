@@ -104,20 +104,34 @@
     - frontend
   tags: frontend
 
+- name: copy htpasswd file
+  copy:
+    src: "files/auth"
+    dest: "{{ caliopen_config_path }}"
+    owner: "root"
+    mode: 0600
+
+- name: create htpasswd secret
+  shell: kubectl create secret generic basic-auth --from-file=auth
+  args:
+    chdir: "{{ caliopen_config_path }}"
+
 - name: setup ingress controller and default backend
   shell: kubectl apply -f {{ yaml_url }}/ingress/{{ item }}-ingress.yaml
   with_items:
     - setup
   tags: ingress
 
-- name: create services
+- name: create nginx and dashboard services
   shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
   with_items:
     - nginx
+    - dashboard
   tags: ingress
 
 - name: create ingress rules
   shell: kubectl apply -f {{ yaml_url }}/ingress/{{ item }}-ingress.yaml
   with_items:
     - caliopen
+    - dashboard
   tags: ingress
