@@ -70,8 +70,8 @@ metadata:
   namespace: ingress-nginx
   labels:
     app: ingress-nginx
-# data:
-#   use-proxy-protocol: "true"
+data:
+  use-proxy-protocol: "true"
 ---
 
 kind: ConfigMap
@@ -273,7 +273,7 @@ spec:
             failureThreshold: 3
             httpGet:
               path: /healthz
-              port: 10254
+              port: 18080
               scheme: HTTP
             initialDelaySeconds: 10
             periodSeconds: 10
@@ -283,7 +283,7 @@ spec:
             failureThreshold: 3
             httpGet:
               path: /healthz
-              port: 10254
+              port: 18080
               scheme: HTTP
             periodSeconds: 10
             successThreshold: 1
