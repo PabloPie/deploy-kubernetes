@@ -17,15 +17,13 @@ global
 	#  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
 	ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
 	ssl-default-bind-options no-sslv3
+	tune.ssl.default-dh-param 2048
 
 defaults
 	log	global
-	mode	http
-	option	httplog
-	option	dontlognull
-    timeout connect 5000
-    timeout client  50000
-    timeout server  50000
+    timeout connect 5s
+    timeout client  30s
+    timeout server  30s
 	errorfile 400 /etc/haproxy/errors/400.http
 	errorfile 403 /etc/haproxy/errors/403.http
 	errorfile 408 /etc/haproxy/errors/408.http
@@ -34,66 +32,85 @@ defaults
 	errorfile 503 /etc/haproxy/errors/503.http
 	errorfile 504 /etc/haproxy/errors/504.http
 
-frontend frontendbalancer
+frontend non-secure
+	mode http
 	bind *:80
-	option forwardfor
-	default_backend front
+	#Redirect HTTP traffic to HTTPS
+    http-request redirect scheme https code 301 if !{ ssl_fc }
 
-frontend apibalancer
-	bind *:31415
-	option forwardfor
-	default_backend api
+frontend caliopen
+	bind *:443 ssl crt /etc/haproxy/certs/caliopen-certs.pem
+	mode tcp
+	tcp-request inspect-delay 5s
+  	tcp-request content accept if { req_ssl_hello_type 1 }
 
-frontend apiv1balancer
-    bind *:6543
-    option forwardfor
-    default_backend apiv1
+ 	acl frontend ssl_fc_sni -i k8s-client.alpha.caliopen.org
+    acl api ssl_fc_sni -i k8s-api.alpha.caliopen.org
+    acl dashboard ssl_fc_sni -i k8s-dash.alpha.caliopen.org
 
-frontend dashboard-front
-    bind *:9090
-    option forwardfor
-    default_backend dashboard
+  	use_backend api_back if api
+  	use_backend frontend_back if frontend
+  	use_backend dashboard_back if dashboard
 
-backend front
+	default_backend frontend_back
+
+backend frontend_back
 	mode http
 	balance roundrobin
 	option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
 	http-check expect status 200
+
+	# maximum SSL session ID length is 32 bytes.
+  	stick-table type binary len 32 size 30k expire 30m
+
+  	#acl clienthello req_ssl_hello_type 1
+	#acl serverhello rep_ssl_hello_type 2
+
+	# use tcp content accepts to detects ssl client and server hello.
+	#tcp-request inspect-delay 5s
+	#tcp-request content accept if clienthello
+
+	# no timeout on response inspect delay by default.
+	#tcp-response content accept if serverhello
+	#stick on payload_lv(43,1) if clienthello
+
+	# Learn on response if server hello.
+	#stick store-response payload_lv(43,1) if serverhello
+	#option ssl-hello-chk
+
 	http-request set-header Host alpha.caliopen.org
-    server master 192.168.0.1:30080 check port 30880 send-proxy
-    server node0  192.168.0.2:30080 check port 30880 send-proxy
-    server node1  192.168.0.3:30080 check port 30880 send-proxy
-    server node2  192.168.0.4:30080 check port 30880 send-proxy
+    server master {{ master_private_ip }}:30080 check port 30880 send-proxy
+    server node0  {{ node0_private_ip }}:30080 check port 30880 send-proxy
+    server node1  {{ node1_private_ip }}:30080 check port 30880 send-proxy
+    server node2  {{ node2_private_ip }}:30080 check port 30880 send-proxy
 
-backend api
+backend api_back
 	mode http
 	balance roundrobin
 	option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
 	http-check expect status 200
-	http-request set-header Host api.caliopen.org
-    server master 192.168.0.1:30080 check port 30880 send-proxy
-    server node0  192.168.0.2:30080 check port 30880 send-proxy
-    server node1  192.168.0.3:30080 check port 30880 send-proxy
-    server node2  192.168.0.4:30080 check port 30880 send-proxy
 
-backend apiv1
+	# maximum SSL session ID length is 32 bytes.
+  	stick-table type binary len 32 size 30k expire 30m
+
+  	http-request set-header Host api.caliopen.org
+    server master {{ master_private_ip }}:30080 check port 30880 send-proxy
+    server node0  {{ node0_private_ip }}:30080 check port 30880 send-proxy
+    server node1  {{ node1_private_ip }}:30080 check port 30880 send-proxy
+    server node2  {{ node2_private_ip }}:30080 check port 30880 send-proxy
+
+
+backend dashboard_back
 	mode http
 	balance roundrobin
 	option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
 	http-check expect status 200
-	http-request set-header Host apiv1.caliopen.org
-    server master 192.168.0.1:30080 check port 30880 send-proxy
-    server node0  192.168.0.2:30080 check port 30880 send-proxy
-    server node1  192.168.0.3:30080 check port 30880 send-proxy
-    server node2  192.168.0.4:30080 check port 30880 send-proxy
 
-backend dashboard
-    mode http
-    balance roundrobin
-    option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
-    http-check expect status 200
-    http-request set-header Host dashboard.caliopen.org
-    server master 192.168.0.1:30080 check port 30880 send-proxy
-    server node0  192.168.0.2:30080 check port 30880 send-proxy
-    server node1  192.168.0.3:30080 check port 30880 send-proxy
-    server node2  192.168.0.4:30080 check port 30880 send-proxy
+	# maximum SSL session ID length is 32 bytes.
+  	stick-table type binary len 32 size 30k expire 30m
+
+  	http-request set-header Host dashboard.caliopen.org
+    server master {{ master_private_ip }}:30080 check port 30880 send-proxy
+    server node0  {{ node0_private_ip }}:30080 check port 30880 send-proxy
+    server node1  {{ node1_private_ip }}:30080 check port 30880 send-proxy
+    server node2  {{ node2_private_ip }}:30080 check port 30880 send-proxy
