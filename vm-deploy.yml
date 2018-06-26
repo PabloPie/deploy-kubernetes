@@ -58,7 +58,7 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
-      extra_disks: [{'name': 'vol0', 'size': 10}]
+      extra_disks: [{'name': 'db0', 'size': 5}, {'name': 'index0', 'size': 5}, {'name': 'store0', 'size': 5}]
       interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
       state: running
       farm: worker_node
@@ -76,7 +76,7 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
-      extra_disks: [{'name': 'vol1', 'size': 10}]
+      extra_disks: [{'name': 'db1', 'size': 5}, {'name': 'index1', 'size': 5}, {'name': 'store1', 'size': 5}]
       interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
       state: running
       farm: worker_node
@@ -94,7 +94,7 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
-      extra_disks: [{'name': 'vol2', 'size': 10}]
+      extra_disks: [{'name': 'db2', 'size': 5}, {'name': 'index2', 'size': 5}, {'name': 'store2', 'size': 5}]
       interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
       state: running
       farm: worker_node

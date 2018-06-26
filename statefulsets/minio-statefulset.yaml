@@ -32,7 +32,12 @@ spec:
         volumeMounts:
         - mountPath: /export
           name: store
-      volumes:
-      - name: store
-        persistentVolumeClaim:
-          claimName: store
+  volumeClaimTemplates:
+  - metadata:
+      name: store
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: minio-storage
+      resources:
+        requests:
+          storage: 5Gi

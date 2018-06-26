@@ -53,7 +53,12 @@ spec:
         volumeMounts:
         - mountPath: /elasticsearch-data
           name: index
-      volumes:
-      - name: index
-        persistentVolumeClaim:
-          claimName: index
+  volumeClaimTemplates:
+  - metadata:
+      name: index
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: elasticsearch-storage
+      resources:
+        requests:
+          storage: 5Gi

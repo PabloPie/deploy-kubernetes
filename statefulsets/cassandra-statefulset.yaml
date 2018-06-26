@@ -67,7 +67,12 @@ spec:
         volumeMounts:
         - name: db
           mountPath: /cassandra-data
-      volumes:
-        - name: db
-          persistentVolumeClaim:
-            claimName: db
+  volumeClaimTemplates:
+  - metadata:
+      name: db
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: cassandra-storage
+      resources:
+        requests:
+          storage: 5Gi

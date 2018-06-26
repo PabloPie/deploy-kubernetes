@@ -10,22 +10,6 @@
   with_fileglob:
     - "templates/configs/*"
 
-- name: create localstorage
-  shell: kubectl apply -f {{ yaml_url }}/storageclass/{{ item }}-storageclass.yaml
-  with_items:
-    - localstorage
-  tags: storage
-  when: not external
-
-- name: create persistent volumes
-  shell: kubectl apply -f {{ yaml_url }}/persistentvolumes/{{ item }}-persistentvolume.yaml
-  with_items:
-    - node0
-    - node1
-    - node2
-  tags: storage
-  when: not external
-
 - name: create caliopen configs
   shell: kubectl create configmap caliopen-config --from-file={{ caliopen_config_path }}
   ignore_errors: yes
@@ -50,8 +34,8 @@
   tags: external
   when: external
 
-- name: create headless services
-  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
+- name: create localstorage
+  shell: kubectl apply -f {{ yaml_url }}/storageclass/{{ item }}-storageclass.yaml
   with_items:
     - cassandra
     - elasticsearch
@@ -59,12 +43,21 @@
   tags: storage
   when: not external
 
-- name: create pvc
-  shell: kubectl apply -f {{ yaml_url }}/volumeclaims/{{ item }}-persistentvolumeclaim.yaml
+- name: create persistent volumes
+  shell: kubectl apply -f {{ yaml_url }}/persistentvolumes/{{ item }}-persistentvolume.yaml
   with_items:
-    - db
-    - index
-    - store
+    - cassandra
+    - elasticsearch
+    - minio
+  tags: storage
+  when: not external
+
+- name: create headless services
+  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
+  with_items:
+    - cassandra
+    - elasticsearch
+    - minio
   tags: storage
   when: not external
 
