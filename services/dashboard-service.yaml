@@ -47,6 +47,8 @@ rules:
     - endpoints
     - horizontalpodautoscalers
     - ingress
+    - ingresses
+    - cronjobs
     - jobs
     - limitranges
     - namespaces
@@ -57,6 +59,7 @@ rules:
     - resourcequotas
     - replicasets
     - replicationcontrollers
+    - statefulsets
     - serviceaccounts
     - services
   verbs: ["get", "list", "watch"]
