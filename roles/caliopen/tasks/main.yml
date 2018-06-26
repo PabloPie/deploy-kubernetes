@@ -105,7 +105,7 @@
     mode: 0600
 
 - name: create htpasswd secret
-  shell: kubectl create secret generic basic-auth --from-file=auth
+  shell: kubectl create secret generic basic-auth --from-file=auth --namespace kube-system
   args:
     chdir: "{{ caliopen_config_path }}"
 
