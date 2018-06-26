@@ -102,6 +102,7 @@ subjects:
   name: kubernetes-dashboard
   namespace: kube-system
 
+---
 # ------------------- Dashboard Deployment ------------------- #
 
 kind: Deployment
@@ -147,10 +148,7 @@ spec:
       - name: tmp-volume
         emptyDir: {}
       serviceAccountName: kubernetes-dashboard
-      # Comment the following tolerations if Dashboard must not be deployed on master
-      # tolerations:
-      # - key: node-role.kubernetes.io/master
-      #   effect: NoSchedule
+
 
 ---
 # ------------------- Dashboard Service ------------------- #
