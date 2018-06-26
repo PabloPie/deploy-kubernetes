@@ -1,8 +1,19 @@
+#Kube data
 kube_token: l1u3tg.i54d3l3zi46znuuy
+
+#IPS
 master_private_ip: "{{ hostvars['master']['private_ips'][0] }}"
 bastion_public_ip: "{{ hostvars['bastion']['public_ips'][0] }}"
-ansible_user: root
-kubeadm_reset: True
+node0_private_ip: "{{ hostvars['node0']['private_ips'][0] }}"
+node1_private_ip: "{{ hostvars['node1']['private_ips'][0] }}"
+node2_private_ip: "{{ hostvars['node2']['private_ips'][0] }}"
+
+#Paths and URLS
 caliopen_config_path: "/etc/caliopen/configs"
 yaml_url: "https://raw.githubusercontent.com/PabloPie/deploy-kubernetes/master"
+caliopen_domain_name: "alpha.caliopen.org"
+
+#Options
+kubeadm_reset: True
 external: False
+ansible_user: root
