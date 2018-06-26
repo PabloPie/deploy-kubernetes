@@ -16,9 +16,3 @@ spec:
       - backend:
           serviceName: api
           servicePort: 31415
-  - host: apiv1.caliopen.org
-    http:
-      paths:
-      - backend:
-          serviceName: apiv1
-          servicePort: 6543
