@@ -59,7 +59,10 @@ rules:
     - resourcequotas
     - replicasets
     - replicationcontrollers
+    - roles
+    - clusterroles
     - statefulsets
+    - storageclasses
     - serviceaccounts
     - services
   verbs: ["get", "list", "watch"]
