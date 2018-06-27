@@ -3,6 +3,7 @@
   remote_user: root
   roles:
     - bastion
+    - lb
   tags:
     - infra
     - bastion
