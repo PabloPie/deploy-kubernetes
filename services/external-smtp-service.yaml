@@ -1,0 +1,23 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: smtp
+spec:
+  ports:
+    - name: smtp
+      protocol: "TCP"
+      port: 2525
+  selector: {}
+---
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: smtp 
+subsets: 
+  #List of all the ips from your smtp servers
+  - addresses:
+      - ip: 192.168.0.33 
+    ports:
+      - port: 2525
+        name: "smtp"

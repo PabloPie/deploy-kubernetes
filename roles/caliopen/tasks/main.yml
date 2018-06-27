@@ -27,9 +27,9 @@
     - frontend
     - nats
     - redis
-    - smtp
+    - external-smtp
 
-- name: create external service
+- name: create external storage service
   shell: kubectl apply -f {{ yaml_url }}/services/external-storage-service.yaml
   tags: external
   when: external
@@ -75,7 +75,6 @@
   with_items:
     - redis
     - nats
-    - smtp
 
 - name: create go app deployments
   shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
