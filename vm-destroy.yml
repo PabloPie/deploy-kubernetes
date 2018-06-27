@@ -15,6 +15,13 @@
       state: deleted
     tags: kube_cluster
 
+  - gandi_vps:
+      gandi_api_key: "{{ gandi_api_key }}"
+      instance_names: escas0,escas1,escas2
+      datacenter: "{{ datacenter }}"
+      state: deleted
+    tags: external_storage
+
   - gandi_vlan:
       gandi_api_key: "{{ gandi_api_key }}"
       name: "{{ vlan_name }}"
