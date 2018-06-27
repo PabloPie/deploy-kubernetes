@@ -20,5 +20,10 @@ spec:
     nodePort: 30880
     port: 18080
     targetPort: 18080
+  - name: lmtp
+    nodePort: 32525
+    port: 2525
+    targetPort: 2525
+    protocol: TCP
   selector:
     app: ingress-nginx

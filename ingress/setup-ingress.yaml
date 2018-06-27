@@ -80,7 +80,7 @@ metadata:
   name: tcp-services
   namespace: ingress-nginx
 data:
-  # 2500: "default/smtp:2500"
+  2525: "default/broker:2525"
 ---
 
 kind: ConfigMap
