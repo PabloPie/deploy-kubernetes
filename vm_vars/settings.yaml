@@ -1,8 +1,25 @@
 # VM configuration
 
+##Common
 image: Ubuntu 16.04 LTS
 vlan_name: kube_vlan
+vlan_net: 192.168.0.0/24
 datacenter: FR-SD5
+
+#Cluster nodes, including master
 node_cpu: 2
 node_mem: 4096
 node_disk: 20
+
+#Master
+master_ip: 192.168.0.1
+
+#Bastion
+bastion_ip: 192.168.0.254
+bastion_cores: 1
+bastion_memory: 512
+bastion_disk: 5
+
+#SSH keys
+#You can give a list, separanting with commas
+gandi_ssh_key_id: 41934

@@ -12,8 +12,8 @@
       gandi_api_key: "{{ gandi_api_key }}"
       name: "{{ vlan_name }}"
       datacenter: "{{ datacenter }}"
-      gateway: 192.168.0.254
-      subnet: 192.168.0.0/24
+      gateway: "{{ bastion_ip }}"
+      subnet: "{{ vlan_net }}"
     tags: vlan
 
   - gandi_vps:
@@ -22,11 +22,11 @@
       machine_type: custom
       image: "{{ image }}"
       datacenter: "{{ datacenter }}"
-      sshkey_ids: [41934]
-      cores: 1
-      memory: 512
-      disk: 5
-      interfaces: {'publics': [{'ipv4': 'auto'}], 'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': '192.168.0.254'}]}
+      sshkey_ids: [{{ gandi_ssh_key_id }}]
+      cores: "{{ bastion_cores }}"
+      memory: "{{ bastion_memory }}"
+      disk: "{{ bastion_disk }}"
+      interfaces: {'publics': [{'ipv4': 'auto'}], 'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ bastion_ip }}"}]}
       state: running
       farm: bastion_node
     tags: bastion
@@ -37,11 +37,11 @@
       machine_type: custom
       image: "{{ image }}"
       datacenter: "{{ datacenter }}"
-      sshkey_ids: [41934]
+      sshkey_ids: [{{ gandi_ssh_key_id }}]
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
-      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': '192.168.0.1'}]}
+      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ master_ip }}"}]}
       state: running
       farm: master_node
     tags:
@@ -54,7 +54,7 @@
       image: "{{ image }}"
       machine_type: custom
       datacenter: "{{ datacenter }}"
-      sshkey_ids: [41934]
+      sshkey_ids: [{{ gandi_ssh_key_id }}]
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
@@ -63,7 +63,7 @@
       state: running
       farm: worker_node
     tags:
-      - master
+      - worker
       - kube_cluster
 
   - gandi_vps:
@@ -72,7 +72,7 @@
       image: "{{ image }}"
       machine_type: custom
       datacenter: "{{ datacenter }}"
-      sshkey_ids: [41934]
+      sshkey_ids: [{{ gandi_ssh_key_id }}]
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
@@ -81,7 +81,7 @@
       state: running
       farm: worker_node
     tags:
-      - master
+      - worker
       - kube_cluster
 
   - gandi_vps:
@@ -90,7 +90,7 @@
       image: "{{ image }}"
       machine_type: custom
       datacenter: "{{ datacenter }}"
-      sshkey_ids: [41934]
+      sshkey_ids: [{{ gandi_ssh_key_id }}]
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
@@ -99,20 +99,5 @@
       state: running
       farm: worker_node
     tags:
-      - master
+      - worker
       - kube_cluster
-
-  - gandi_vps:
-      gandi_api_key: "{{ gandi_api_key }}"
-      name: escas1
-      image: "Debian 8"
-      machine_type: custom
-      datacenter: "{{ datacenter }}"
-      sshkey_ids: [41934]
-      cores: "{{ node_cpu }}"
-      memory: 6144
-      disk: 50
-      farm: storage_node
-      state: running
-      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': '192.168.0.10'}]}
-    when: external
