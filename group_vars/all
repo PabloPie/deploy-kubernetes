@@ -1,19 +1,32 @@
-#Kube data
+# Kube data
 kube_token: l1u3tg.i54d3l3zi46znuuy
+## Chose the user and pass you want to use to connect
+## to your kubernetes API from outside the cluster
+kube_api_user:
+##sha-256 hashed pass
+kube_api_pass:
 
-#IPS
+# Node IPS
 master_private_ip: "{{ hostvars['master']['private_ips'][0] }}"
 bastion_public_ip: "{{ hostvars['bastion']['public_ips'][0] }}"
+bastion_private_ip: "{{ hostvars['bastion']['private_ips'][0] }}"
 node0_private_ip: "{{ hostvars['node0']['private_ips'][0] }}"
 node1_private_ip: "{{ hostvars['node1']['private_ips'][0] }}"
 node2_private_ip: "{{ hostvars['node2']['private_ips'][0] }}"
 
-#Paths and URLS
+# External services IPS
+## Each variable can be a list of comma separated IPS
+cassandra_cluster_ips: "1,2,3,4"
+es_cluster_ips: "1,2,3,4"
+minio_cluster_ips: "1,2,3,4"
+
+# Paths and URLS
 caliopen_config_path: "/etc/caliopen/configs"
 yaml_url: "https://raw.githubusercontent.com/PabloPie/deploy-kubernetes/master"
 caliopen_domain_name: "alpha.caliopen.org"
 
-#Options
+# Options
 kubeadm_reset: True
-external: False
+external-storage: False
+external-smtp: True
 ansible_user: root

@@ -44,7 +44,7 @@ metadata:
 subsets: 
   #List of all the ips from your cassandra cluster
   - addresses:
-      - ip: 192.168.0.10 
+      - ip: [{{ cassandra_cluster_ips }}]
     ports:
       - port: 9042
         name: "cql"
@@ -61,7 +61,7 @@ metadata:
 subsets:
   #List of all the ips from your cassandra cluster
   - addresses:
-      - ip: 192.168.0.10  
+      - ip: [{{ es_cluster_ips }}]  
     ports:
     - name: es
       protocol: "TCP"
@@ -75,7 +75,7 @@ metadata:
 subsets:
   #List of all the ips from your cassandra cluster
   - addresses:
-      - ip: 192.168.0.10  
+      - ip: [{{ minio_cluster_ips }}]  
     ports:
       - name: minio
         protocol: "TCP"

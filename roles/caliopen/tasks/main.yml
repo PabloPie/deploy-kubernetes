@@ -10,12 +10,20 @@
   with_fileglob:
     - "templates/configs/*"
 
+- name: copy external services files
+  template:
+    src: services/external-{{ item }}-service.yaml.j2
+    dest: external-{{ item }}-service.yaml
+  with_items:
+    - smtp
+    - storage
+
 - name: create caliopen configs
   shell: kubectl create configmap caliopen-config --from-file={{ caliopen_config_path }}
   ignore_errors: yes
 
-- name: create dns config
-  shell: kubectl apply -f {{ yaml_url }}/configs/dns-config.yaml
+- name: create config files
+  shell: kubectl apply -f {{ yaml_url }}/configs/
   ignore_errors: yes
 
 - name: create services
@@ -27,12 +35,16 @@
     - frontend
     - nats
     - redis
-    - external-smtp
+
+- name: create external smtp service
+  shell: kubectl apply -f external-smtp-service.yaml
+  tags: smtp
+  when: external-smtp
 
 - name: create external storage service
-  shell: kubectl apply -f {{ yaml_url }}/services/external-storage-service.yaml
-  tags: external
-  when: external
+  shell: kubectl apply -f external-storage-service.yaml
+  tags: storage
+  when: external-storage
 
 - name: create localstorage
   shell: kubectl apply -f {{ yaml_url }}/storageclass/{{ item }}-storageclass.yaml
@@ -41,7 +53,7 @@
     - elasticsearch
     - minio
   tags: storage
-  when: not external
+  when: not external-storage
 
 - name: create persistent volumes
   shell: kubectl apply -f {{ yaml_url }}/persistentvolumes/{{ item }}-persistentvolume.yaml
@@ -50,7 +62,7 @@
     - elasticsearch
     - minio
   tags: storage
-  when: not external
+  when: not external-storage
 
 - name: create headless services
   shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
@@ -59,7 +71,7 @@
     - elasticsearch
     - minio
   tags: storage
-  when: not external
+  when: not external-storage
 
 - name: create storage deployments
   shell: kubectl apply -f {{ yaml_url }}/statefulsets/{{ item }}-statefulset.yaml
@@ -68,7 +80,7 @@
     - elasticsearch
     - minio
   tags: storage
-  when: not external
+  when: not external-storage
 
 - name: create basic deployments
   shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
