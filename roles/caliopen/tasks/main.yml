@@ -139,3 +139,6 @@
     - caliopen
     - dashboard
   tags: ingress
+
+- name: start kubeapi proxy
+  shell: kubectl proxy --port {{ kubeapi_port }} --address {{ master_private_ip }} --accept-hosts '.*' &

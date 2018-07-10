@@ -10,6 +10,9 @@ datacenter: FR-SD5
 node_cpu: 2
 node_mem: 4096
 node_disk: 20
+cassandra_disk: 5
+elasticsearch_disk: 5
+minio_disk: 5
 
 #Master
 master_ip: 192.168.0.1
@@ -21,5 +24,5 @@ bastion_memory: 512
 bastion_disk: 5
 
 #SSH keys
-#You can give a list, separanting with commas
+#You can give a list, separated with commas
 gandi_ssh_key_id: 41934
