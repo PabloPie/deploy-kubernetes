@@ -16,3 +16,9 @@
 
 - name: enable SNAT
   shell: iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to {{ ansible_eth0.ipv4.address }}
+
+- name: copy ssh keys
+  copy:
+    src: files/ssh_authorized_keys
+    dest: /root/.ssh/authorized_keys
+    mode: 0600
