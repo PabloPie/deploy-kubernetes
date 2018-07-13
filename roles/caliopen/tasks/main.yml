@@ -1,7 +1,7 @@
 - name: Ensures {{ caliopen_config_path }} dir exists
   file: path={{ caliopen_config_path }} state=directory
 
-- name: copy configs
+- name: copy caliopen configs
   copy:
     src: "{{ item }}"
     dest: "{{ caliopen_config_path }}"
@@ -12,18 +12,14 @@
 
 - name: copy external services files
   template:
-    src: services/external-{{ item }}-service.yaml.j2
-    dest: external-{{ item }}-service.yaml
+    src: templates/services/external-{{ item }}-service.yaml.j2
+    dest: /etc/caliopen/external-{{ item }}-service.yaml
   with_items:
     - smtp
     - storage
 
 - name: create caliopen configs
   shell: kubectl create configmap caliopen-config --from-file={{ caliopen_config_path }}
-  ignore_errors: yes
-
-- name: create config files
-  shell: kubectl apply -f {{ yaml_url }}/configs/
   ignore_errors: yes
 
 - name: create services
@@ -37,14 +33,14 @@
     - redis
 
 - name: create external smtp service
-  shell: kubectl apply -f external-smtp-service.yaml
+  shell: kubectl apply -f /etc/caliopen/external-smtp-service.yaml
   tags: smtp
-  when: external-smtp
+  when: externalsmtp
 
 - name: create external storage service
-  shell: kubectl apply -f external-storage-service.yaml
+  shell: kubectl apply -f /etc/caliopen/external-storage-service.yaml
   tags: storage
-  when: external-storage
+  when: externalstorage
 
 - name: create localstorage
   shell: kubectl apply -f {{ yaml_url }}/storageclass/{{ item }}-storageclass.yaml
@@ -53,7 +49,7 @@
     - elasticsearch
     - minio
   tags: storage
-  when: not external-storage
+  when: not externalstorage
 
 - name: create persistent volumes
   shell: kubectl apply -f {{ yaml_url }}/persistentvolumes/{{ item }}-persistentvolume.yaml
@@ -62,7 +58,7 @@
     - elasticsearch
     - minio
   tags: storage
-  when: not external-storage
+  when: not externalstorage
 
 - name: create headless services
   shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
@@ -71,7 +67,7 @@
     - elasticsearch
     - minio
   tags: storage
-  when: not external-storage
+  when: not externalstorage
 
 - name: create storage deployments
   shell: kubectl apply -f {{ yaml_url }}/statefulsets/{{ item }}-statefulset.yaml
@@ -80,7 +76,7 @@
     - elasticsearch
     - minio
   tags: storage
-  when: not external-storage
+  when: not externalstorage
 
 - name: create basic deployments
   shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
