@@ -10,6 +10,13 @@
   tasks:
   - gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
+      instance_names: bastion
+      datacenter: "{{ datacenter }}"
+      state: deleted
+    tags: bastion
+
+  - gandi_vps:
+      gandi_api_key: "{{ gandi_api_key }}"
       instance_names: node,node0,node1,node2,node3,node4,master,master0,master1,master2
       datacenter: "{{ datacenter }}"
       state: deleted
@@ -21,4 +28,3 @@
       datacenter: "{{ datacenter }}"
       state: deleted
     tags: vlan
-
