@@ -6,6 +6,9 @@
 - name: copy config file
   template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
 
+- name: Ensures haproxy certs dir exists
+  file: path=/etc/haproxy/certs state=directory
+
 - name: install ssl certificate and private key
   copy: src={{ item }} dest=/etc/haproxy/certs/{{ item }}
   with_items:
@@ -13,7 +16,12 @@
     - "{{ caliopen_domain_name }}.key"
 
 - name: create pem file
-  shell: cat {{ caliopen_domain_name }}.crt {{ caliopen_domain_name }}.key > alpha-certs.pem
+  shell: cat {{ caliopen_domain_name }}.crt {{ caliopen_domain_name }}.key >> alpha-certs.pem
+  args:
+    chdir: /etc/haproxy/certs
+    creates: alpha-certs.pem
 
 - name: restart haproxy service
-  shell: service haproxy restart
+  service:
+    name: haproxy
+    state: restarted

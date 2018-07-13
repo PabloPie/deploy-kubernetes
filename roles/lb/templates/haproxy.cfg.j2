@@ -34,7 +34,7 @@ defaults
 
 # hashed pass
 userlist admins
-	user {{ kube_api_auth }} password {{ kube_api_pass }}
+	user {{ kube_api_auth }} insecure-password "{{ kube_api_pass }}"
 
 frontend api
     mode http
@@ -63,12 +63,14 @@ frontend caliopen
  	acl frontend ssl_fc_sni -i k8s-client.{{ caliopen_domain_name }}
     acl api ssl_fc_sni -i k8s-api.{{ caliopen_domain_name }}
     acl dashboard ssl_fc_sni -i k8s-dash.{{ caliopen_domain_name }}
+    acl drone-server ssl_fc_sni -i k8s-drone.{{ caliopen_domain_name }}
 
   	use_backend api_back if api
   	use_backend frontend_back if frontend
   	use_backend dashboard_back if dashboard
+  	use_backend drone_back if drone-server
 
-	default_backend frontend_back
+	default_backend notfound_back
 
 backend frontend_back
 	mode http
@@ -94,7 +96,6 @@ backend api_back
     server node1  {{ node1_private_ip }}:30080 check port 30880 send-proxy
     server node2  {{ node2_private_ip }}:30080 check port 30880 send-proxy
 
-
 backend dashboard_back
 	mode http
 	balance roundrobin
@@ -106,3 +107,26 @@ backend dashboard_back
     server node0  {{ node0_private_ip }}:30080 check port 30880 send-proxy
     server node1  {{ node1_private_ip }}:30080 check port 30880 send-proxy
     server node2  {{ node2_private_ip }}:30080 check port 30880 send-proxy
+
+backend drone_back
+	mode http
+	balance roundrobin
+	option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
+	http-check expect status 200
+  	http-request set-header Host drone.caliopen.org
+
+    server master {{ master_private_ip }}:30080 check port 30880 send-proxy
+    server node0  {{ node0_private_ip }}:30080 check port 30880 send-proxy
+    server node1  {{ node1_private_ip }}:30080 check port 30880 send-proxy
+    server node2  {{ node2_private_ip }}:30080 check port 30880 send-proxy
+
+backend notfound_back
+	mode http
+	balance roundrobin
+	option httpchk GET /healthz HTTP/1.1
+	http-check expect status 200
+
+    server master {{ master_private_ip }}:30404 check
+    server node0  {{ node0_private_ip }}:30404 check
+    server node1  {{ node1_private_ip }}:30404 check
+    server node2  {{ node2_private_ip }}:30404 check
