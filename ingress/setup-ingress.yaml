@@ -59,6 +59,8 @@ spec:
   ports:
   - port: 80
     targetPort: 8080
+    nodePort: 30404
+  type: NodePort
   selector:
     app: default-http-backend
 ---
