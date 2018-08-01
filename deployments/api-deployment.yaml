@@ -8,8 +8,8 @@ spec:
     matchLabels:
       app: api
   #strategy:
-  #  type: Recreate / RollingUpdate
-  #    maxUnavailable:
+  #  type: RollingUpdate
+  #    maxUnavailable: 50
   template:
     metadata:
       labels:
@@ -18,7 +18,8 @@ spec:
         app: api
     spec:
       containers:
-      - image: public-registry.caliopen.org/api
+      - image: public-registry.caliopen.org/caliopen_api
+        imagePullPolicy: Always
         name: api
         ports:
         - containerPort: 31415

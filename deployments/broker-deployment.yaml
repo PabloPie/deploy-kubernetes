@@ -8,8 +8,8 @@ spec:
     matchLabels:
       app: broker
   #strategy:
-  #  type: Recreate / RollingUpdate
-  #    maxUnavailable:
+  #  type: RollingUpdate
+  #    maxUnavailable: 50
   template:
     metadata:
       labels:
@@ -18,7 +18,8 @@ spec:
         app: broker
     spec:
       containers:
-      - image: public-registry.caliopen.org/broker
+      - image: public-registry.caliopen.org/caliopen_broker
+        imagePullPolicy: Always
         name: broker
         ports:
         - containerPort: 2525

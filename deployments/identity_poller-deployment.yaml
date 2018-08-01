@@ -7,6 +7,9 @@ spec:
   selector:
     matchLabels:
       app: identity_poller
+  #strategy:
+  #  type: RollingUpdate
+  #    maxUnavailable: 50
   template:
     metadata:
       labels:
@@ -15,7 +18,8 @@ spec:
         app: identity_poller
     spec:
       containers:
-      - image: public-registry.caliopen.org/identity_poller
+      - image: public-registry.caliopen.org/caliopen_identity_poller
+        imagePullPolicy: Always
         name: identity_poller
         volumeMounts:
         - name: config-volume

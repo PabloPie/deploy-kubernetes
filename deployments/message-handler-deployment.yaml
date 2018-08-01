@@ -7,6 +7,9 @@ spec:
   selector:
     matchLabels:
       app: message-handler
+  #strategy:
+  #  type: RollingUpdate
+  #    maxUnavailable: 50
   template:
     metadata:
       labels:
@@ -15,7 +18,8 @@ spec:
         app: message-handler
     spec:
       containers:     
-      - image: public-registry.caliopen.org/message-handler
+      - image: public-registry.caliopen.org/caliopen_message-handler
+        imagePullPolicy: Always
         name: message-handler
         volumeMounts:
         - name: config-volume

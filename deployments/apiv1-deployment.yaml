@@ -8,8 +8,8 @@ spec:
     matchLabels:
       app: apiv1
   #strategy:
-  #  type: Recreate / RollingUpdate
-  #    maxUnavailable:
+  #  type: RollingUpdate
+  #    maxUnavailable: 50
   template:
     metadata:
       labels:
@@ -18,7 +18,8 @@ spec:
         app: apiv1
     spec:
       containers:
-      - image: public-registry.caliopen.org/apiv1
+      - image: public-registry.caliopen.org/caliopen_apiv1
+        imagePullPolicy: Always
         name: apiv1
         ports:
         - containerPort: 6543
