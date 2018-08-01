@@ -34,3 +34,8 @@
 
 - name: install weave pod network
   command: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version={{ kube_version.stdout }}"
+
+- name: create general configuration
+  command: kubectl apply -f {{ yaml_url }}/configs/{{ item }}-config.yaml
+  with_items:
+    - coredns
