@@ -15,8 +15,10 @@
       gateway: "{{ bastion_ip }}"
       subnet: "{{ vlan_net }}"
     tags: vlan
+    name: vlan creation
 
-  - gandi_vps:
+  - name: bastion creation
+    gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
       name: bastion
       machine_type: custom
@@ -30,12 +32,13 @@
       interfaces: {'publics': [{'ipv4': 'auto'}], 'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ bastion_ip }}"}]}
       state: running
       farm: bastion_node
+    tags: bastion
     async: 7200
     poll: 0
-    tags: bastion
     register: bastion_creation
 
-  - gandi_vps:
+  - name: master creation
+    gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
       name: "{{ item.name }}"
       machine_type: custom
@@ -49,16 +52,17 @@
       interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ item.master_ip }}"}]}
       state: running
       farm: master_node
+    with_items:
+      - { name: master, master_ip: "{{ master_ip }}" }
     tags:
       - master
       - kube_cluster
     async: 7200
     poll: 0
-    with_items:
-      - { name: master, master_ip: "{{ master_ip }}" }
     register: master_creation
 
-  - gandi_vps:
+  - name: nodes creation
+    gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
       name: "{{ item.name }}"
       image: "{{ image }}"
@@ -73,15 +77,15 @@
       interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
       state: running
       farm: worker_node
+    with_items:
+      - { name: node0, db_disk: db0, index_disk: index0, store_disk: store0 }
+      - { name: node1, db_disk: db1, index_disk: index1, store_disk: store1 }
+      - { name: node2, db_disk: db2, index_disk: index2, store_disk: store2 }
     tags:
       - worker
       - kube_cluster
     async: 7200
     poll: 0
-    with_items:
-      - { name: node0, db_disk: db0, index_disk: index0, store_disk: store0 }
-      - { name: node1, db_disk: db1, index_disk: index1, store_disk: store1 }
-      - { name: node2, db_disk: db2, index_disk: index2, store_disk: store2 }
     register: worker_creation
 
   - name: wait for creation
