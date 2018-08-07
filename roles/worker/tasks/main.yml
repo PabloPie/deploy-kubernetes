@@ -1,3 +1,9 @@
+- name: install kube utilities
+  apt: package={{ item }} update_cache=yes
+  with_items:
+    - kubelet
+    - kubeadm
+
 - name: reset before join
   command: kubeadm reset
   when: kubeadm_reset

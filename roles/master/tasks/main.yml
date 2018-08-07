@@ -1,3 +1,9 @@
+- name: install kube utilities
+  apt: package={{ item }} update_cache=yes
+  with_items:
+    - kubelet
+    - kubeadm
+
 - name: reset kubeadm
   command: kubeadm reset
   when: kubeadm_reset
@@ -34,8 +40,3 @@
 
 - name: install weave pod network
   command: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version={{ kube_version.stdout }}"
-
-- name: create general configuration
-  command: kubectl apply -f {{ yaml_url }}/configs/{{ item }}-config.yaml
-  with_items:
-    - coredns

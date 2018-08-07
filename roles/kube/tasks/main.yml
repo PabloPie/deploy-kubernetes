@@ -18,6 +18,4 @@
 - name: install kube utilities
   apt: package={{ item }} update_cache=yes
   with_items:
-    - kubelet
-    - kubeadm
     - kubectl
