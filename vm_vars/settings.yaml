@@ -4,7 +4,7 @@
 image: Ubuntu 16.04 LTS
 vlan_name: kube_vlan
 base_net: 192.168.1
-vlan_net: "{{ base_net }}".0/24
+vlan_net: "{{ base_net }}.0/24"
 datacenter: FR-SD5
 
 #Cluster nodes, including master
@@ -17,10 +17,10 @@ elasticsearch_disk: 5
 minio_disk: 5
 
 #Master
-master_ip: "{{ base_net }}".1
+master_ip: "{{ base_net }}.1"
 
 #Bastion
-bastion_ip: "{{ base_net }}".254
+bastion_ip: "{{ base_net }}.254"
 bastion_cores: 1
 bastion_memory: 512
 bastion_disk: 5
