@@ -2,7 +2,7 @@
   template: src=ssh_authorized_keys dest=/root/.ssh/authorized_keys mode=0600
 
 - name: Configure default ipv4 gateway
-  shell: ip route add default via 192.168.0.254
+  shell: ip route add default via {{ bastion_ip }}
   ignore_errors: yes
 
 - name: add gandi apt key
