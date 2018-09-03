@@ -10,14 +10,6 @@
   with_fileglob:
     - "templates/configs/*"
 
-- name: copy external services files
-  template:
-    src: templates/services/external-{{ item }}-service.yaml.j2
-    dest: /etc/caliopen/external-{{ item }}-service.yaml
-  with_items:
-    - smtp
-    - storage
-
 - name: create caliopen configs
   shell: kubectl create configmap caliopen-config --from-file={{ caliopen_config_path }}
   ignore_errors: yes
@@ -29,66 +21,14 @@
     - apiv1
     - broker
     - frontend
-    - nats
-    - redis
-
-- name: create external smtp service
-  shell: kubectl apply -f /etc/caliopen/external-smtp-service.yaml
-  tags: smtp
-  when: externalsmtp
-
-- name: create external storage service
-  shell: kubectl apply -f /etc/caliopen/external-storage-service.yaml
-  tags: storage
-  when: externalstorage
-
-- name: create localstorage
-  shell: kubectl apply -f {{ yaml_url }}/storageclass/{{ item }}-storageclass.yaml
-  with_items:
-    - cassandra
-    - elasticsearch
-    - minio
-  tags: storage
-  when: not externalstorage
-
-- name: create persistent volumes
-  shell: kubectl apply -f {{ yaml_url }}/persistentvolumes/{{ item }}-persistentvolume.yaml
-  with_items:
-    - cassandra
-    - elasticsearch
-    - minio
-  tags: storage
-  when: not externalstorage
-
-- name: create headless services
-  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
-  with_items:
-    - cassandra
-    - elasticsearch
-    - minio
-  tags: storage
-  when: not externalstorage
-
-- name: create storage deployments
-  shell: kubectl apply -f {{ yaml_url }}/statefulsets/{{ item }}-statefulset.yaml
-  with_items:
-    - cassandra
-    - elasticsearch
-    - minio
-  tags: storage
-  when: not externalstorage
-
-- name: create basic deployments
-  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
-  with_items:
-    - redis
-    - nats
 
 - name: create go app deployments
   shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
   with_items:
     - broker
     - api
+    - identity-poller
+    - identity-worker
   tags: go
 
 - name: create python app deployments

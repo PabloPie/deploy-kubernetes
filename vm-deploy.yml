@@ -8,34 +8,6 @@
     - "vm_vars/settings.yaml"
 
   tasks:
-  - name: vlan creation
-    gandi_vlan:
-      gandi_api_key: "{{ gandi_api_key }}"
-      name: "{{ vlan_name }}"
-      datacenter: "{{ datacenter }}"
-      gateway: "{{ bastion_ip }}"
-      subnet: "{{ vlan_net }}"
-    tags: vlan
-
-  - name: bastion creation
-    gandi_vps:
-      gandi_api_key: "{{ gandi_api_key }}"
-      name: bastion
-      machine_type: custom
-      image: "{{ image }}"
-      datacenter: "{{ datacenter }}"
-      sshkey_ids:
-        - "{{ gandi_ssh_key_id }}"
-      cores: "{{ bastion_cores }}"
-      memory: "{{ bastion_memory }}"
-      disk: "{{ bastion_disk }}"
-      interfaces: {'publics': [{'ipv4': 'auto'}], 'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ bastion_ip }}"}]}
-      state: running
-      farm: bastion_node
-    tags: bastion
-    async: 7200
-    poll: 0
-    register: bastion_creation
 
   - name: master creation
     gandi_vps:
@@ -73,14 +45,14 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
-      extra_disks: [{'name': "{{ item.db_disk }}", 'size': "{{ cassandra_disk }}"}, {'name': "{{ item.index_disk }}", 'size': "{{ elasticsearch_disk }}"}, {'name': "{{ item.store_disk }}", 'size': "{{ minio_disk }}"}]
       interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
       state: running
       farm: worker_node
     with_items:
-      - { name: node0, db_disk: db0, index_disk: index0, store_disk: store0 }
-      - { name: node1, db_disk: db1, index_disk: index1, store_disk: store1 }
-      - { name: node2, db_disk: db2, index_disk: index2, store_disk: store2 }
+      - { name: node0 }
+      - { name: node1 }
+      - { name: node2 }
+      - { name: node3 }
     tags:
       - worker
       - kube_cluster
@@ -96,6 +68,5 @@
     delay: 10
     retries: 300
     with_items: 
-      - "{{ bastion_creation.results }}"
       - "{{ master_creation.results }}"
       - "{{ worker_creation.results }}"
