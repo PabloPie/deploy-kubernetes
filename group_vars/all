@@ -11,11 +11,11 @@ node2_private_ip: "{{ hostvars['node2']['private_ips'][0] }}"
 
 # External services IP
 cassandra_cluster_ips: [{% for host in groups['store']%}"{{ hostvars[host]['backend_ip']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
-es_cluster_ips: [{% for host in groups['store']%}"{{ hostvars[host]['backend_ip']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+es_cluster_ips: [{% for host in groups['store']%}"{{ hostvars[host]['backend_ip']}}:9200"{%- if not loop.last -%},{% endif %}{% endfor %}]
 minio_cluster_ips: [{% for host in groups['s3']%}"{{ hostvars[host]['backend_ip']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
 smtp_server_ip: "{{ hostvars['mx']['backend_ip'] }}"
-cache_cluster_ips: [{% for host in groups['cache']%}"{{ hostvars[host]['backend_ip']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
-mq_server_ip: [{% for host in groups['mq']%}"{{ hostvars[host]['backend_ip']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+cache_cluster_ips: [{% for host in groups['cache']%}"{{ hostvars[host]['backend_ip']}}:9090"{%- if not loop.last -%},{% endif %}{% endfor %}]
+mq_cluster_ip: [{% for host in groups['mq']%}"{{ hostvars[host]['backend_ip']}}:4222"{%- if not loop.last -%},{% endif %}{% endfor %}]
 
 # Paths and URLS
 caliopen_config_path: "/etc/caliopen/configs"

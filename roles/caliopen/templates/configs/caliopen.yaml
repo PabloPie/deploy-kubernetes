@@ -17,7 +17,9 @@ elasticsearch:
 cassandra:
     keyspace: caliopen
     hosts:
-        - 'cassandra'
+{% for host in groups['store'] %}
+      - {{ hostvars[host]['backend_ip'] }}
+{% endfor %}
     consistency_level: 1
     protocol_version: 3
 
@@ -36,10 +38,10 @@ message_queue:
 object_store:
     db_size_limit: 1048576
     service: s3
-    endpoint: minio:9090
-    access_key: CALIOPEN_ACCESS_KEY_
-    secret_key: CALIOPEN_SECRET_KEY_BE_GOOD_AND_LIVE_OLD
-    location: eu-fr-localhost
+    endpoint: {{ hostvars['object_store1']['backend_ip'] }}:9000
+    access_key: {{ object_store_access_key }}
+    secret_key: {{ object_store_secret_key }}
+    location: eu-fr-paris
 
 system:
     max_users: 100
