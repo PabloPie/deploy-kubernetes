@@ -20,11 +20,11 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
-      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ item.master_ip }}"}]}
+      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ item.ip }}"}]}
       state: running
       farm: master_node
     with_items:
-      - { name: master, master_ip: "{{ master_ip }}" }
+      - { name: master, ip: "{{ master_ip }}" }
     tags:
       - master
       - kube_cluster
@@ -44,14 +44,14 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
-      interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
+      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ item.ip }}"}]}
       state: running
       farm: worker_node
     with_items:
-      - { name: node0 }
-      - { name: node1 }
-      - { name: node2 }
-      - { name: node3 }
+      - { name: node0, ip: "{{ node_0_ip}}" }
+      - { name: node1, ip: "{{ node_1_ip}}" }
+      - { name: node2, ip: "{{ node_2_ip}}" }
+      - { name: node3, ip: "{{ node_3_ip}}" }
     tags:
       - worker
       - kube_cluster

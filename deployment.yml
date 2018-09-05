@@ -1,10 +1,8 @@
-- hosts: bastion_node
+- hosts: gw
   become: yes
   remote_user: root
   roles:
-    - bastion
     - kube
-    - lb
   tags:
     - infra
     - bastion

@@ -11,19 +11,13 @@ datacenter: FR-SD5
 node_cpu: 2
 node_mem: 4096
 node_disk: 20
-#Data disks
-cassandra_disk: 5
-elasticsearch_disk: 5
-minio_disk: 5
 
-#Master
+# IP addresses
 master_ip: "{{ base_net }}.1"
-
-#Bastion
-bastion_ip: "{{ base_net }}.254"
-bastion_cores: 1
-bastion_memory: 512
-bastion_disk: 5
+node_0_ip: "{{ base_net }}.2"
+node_1_ip: "{{ base_net }}.3"
+node_2_ip: "{{ base_net }}.4"
+node_3_ip: "{{ base_net }}.5"
 
 #SSH keys
 #You can give a key id
