@@ -8,7 +8,6 @@
     - "vm_vars/settings.yaml"
 
   tasks:
-
   - name: master creation
     gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"

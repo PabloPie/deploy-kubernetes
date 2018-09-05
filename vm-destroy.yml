@@ -27,6 +27,7 @@
       - node0
       - node1
       - node2
+      - node3
     tags: kube_cluster
     async: 7200
     poll: 0

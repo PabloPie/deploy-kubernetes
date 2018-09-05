@@ -8,6 +8,7 @@ bastion_private_ip: "{{ hostvars['gw1']['private_ips'][0] }}"
 node0_private_ip: "{{ hostvars['node0']['private_ips'][0] }}"
 node1_private_ip: "{{ hostvars['node1']['private_ips'][0] }}"
 node2_private_ip: "{{ hostvars['node2']['private_ips'][0] }}"
+node3_private_ip: "{{ hostvars['node3']['private_ips'][0] }}"
 
 # External services IP
 cassandra_cluster_ips: [{% for host in groups['store']%}"{{ hostvars[host]['backend_ip']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
@@ -27,3 +28,6 @@ kubeadm_reset: false
 externalstorage: true
 externalsmtp: true
 ansible_user: root
+
+# Passwords
+dashboard_password:
