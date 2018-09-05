@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: broker
+  name: apiv2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: broker
+      app: apiv2
   #strategy:
   #  type: RollingUpdate
   #    maxUnavailable: 50
   template:
     metadata:
       labels:
-        type: broker
+        type: api
         tier: backend
-        app: broker
+        app: apiv2
     spec:
       containers:
-      - image: public-registry.caliopen.org/caliopen_broker
+      - image: public-registry.caliopen.org/caliopen_api
         imagePullPolicy: Always
-        name: broker
+        name: apiv2
         ports:
-        - containerPort: 2525
+        - containerPort: 31415
         volumeMounts:
         - name: config-volume
           mountPath: /etc/caliopen
@@ -31,6 +31,8 @@ spec:
         configMap:
           name: caliopen-config
           items:
-          - key: lmtp.yaml
-            path: lmtp.yaml
+          - key: apiv2.yaml
+            path: apiv2.yaml
+          - key: swagger.json
+            path: swagger.json
       restartPolicy: Always

@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: lmtpd
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      app: lmtpd
   #strategy:
   #  type: RollingUpdate
   #    maxUnavailable: 50
   template:
     metadata:
       labels:
-        type: api
+        type: lmtp
         tier: backend
-        app: api
+        app: lmtpd
     spec:
       containers:
-      - image: public-registry.caliopen.org/caliopen_api
+      - image: public-registry.caliopen.org/caliopen_broker
         imagePullPolicy: Always
-        name: api
+        name: lmtpd
         ports:
-        - containerPort: 31415
+        - containerPort: 2525
         volumeMounts:
         - name: config-volume
           mountPath: /etc/caliopen
@@ -31,8 +31,6 @@ spec:
         configMap:
           name: caliopen-config
           items:
-          - key: apiv2.yaml
-            path: apiv2.yaml
-          - key: swagger.json
-            path: swagger.json
+          - key: lmtp.yaml
+            path: lmtp.yaml
       restartPolicy: Always
