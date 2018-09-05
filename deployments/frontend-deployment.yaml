@@ -25,7 +25,7 @@ spec:
         - containerPort: 4000
         env:
         - name: CALIOPEN_API_HOSTNAME
-          value: "api"
+          value: "apiv2"
         - name: CALIOPEN_API_PROTOCOL
           value: "http"
         - name: CALIOPEN_API_PORT

@@ -27,7 +27,7 @@
   shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
   with_items:
     - lmtpd
-    - api
+    - apiv2
     - identity-poller
     - identity-worker
   tags: [ go, deployment ]
