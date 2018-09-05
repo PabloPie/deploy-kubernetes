@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: identity_poller
+  name: identity-poller
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: identity_poller
+      app: identity-poller
   #strategy:
   #  type: RollingUpdate
   #    maxUnavailable: 50
   template:
     metadata:
       labels:
-        type: identity_poller
+        type: identity-poller
         tier: remote-identities
-        app: identity_poller
+        app: identity-poller
     spec:
       containers:
       - image: public-registry.caliopen.org/caliopen_identity_poller:develop
         imagePullPolicy: Always
-        name: identity_poller
+        name: identity-poller
         volumeMounts:
         - name: config-volume
           mountPath: /etc/caliopen
