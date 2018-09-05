@@ -66,10 +66,10 @@ backend frontend_back
 	option httpchk GET /
 	http-check expect status 200
 
-    server master {{ master_private_ip }}:34000 check send-proxy
-    server node0  {{ node0_private_ip }}:34000 check send-proxy
-    server node1  {{ node1_private_ip }}:34000 check send-proxy
-    server node2  {{ node2_private_ip }}:34000 check send-proxy
+    server master {{ master_private_ip }}:30400 check send-proxy
+    server node0  {{ node0_private_ip }}:30400 check send-proxy
+    server node1  {{ node1_private_ip }}:30400 check send-proxy
+    server node2  {{ node2_private_ip }}:30400 check send-proxy
 
 backend apiv1_back
 	mode http

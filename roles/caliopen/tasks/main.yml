@@ -19,7 +19,7 @@
   with_items:
     - apiv2
     - apiv1
-    - broker
+    - lmtpd
     - frontend
   tags: service
 
