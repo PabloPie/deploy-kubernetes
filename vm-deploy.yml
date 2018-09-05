@@ -8,6 +8,26 @@
     - "vm_vars/settings.yaml"
 
   tasks:
+  - name: bastion creation
+    gandi_vps:
+      gandi_api_key: "{{ gandi_api_key }}"
+      name: lb1
+      machine_type: custom
+      image: "{{ bastion_image }}"
+      datacenter: "{{ datacenter }}"
+      sshkey_ids:
+        - "{{ gandi_ssh_key_id }}"
+      cores: "{{ bastion_cores }}"
+      memory: "{{ bastion_memory }}"
+      disk: "{{ bastion_disk }}"
+      interfaces: {'publics': [{'ipv4': 'auto'}], 'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ bastion_ip }}"}]}
+      state: running
+      farm: lb
+    tags: bastion
+    async: 7200
+    poll: 0
+    register: bastion_creation
+
   - name: master creation
     gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
@@ -22,7 +42,7 @@
       disk: "{{ node_disk }}"
       interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ item.ip }}"}]}
       state: running
-      farm: master_node
+      farm: master
     with_items:
       - { name: master, ip: "{{ master_ip }}" }
     tags:
@@ -46,7 +66,7 @@
       disk: "{{ node_disk }}"
       interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ item.ip }}"}]}
       state: running
-      farm: worker_node
+      farm: worker
     with_items:
       - { name: node0, ip: "{{ node_0_ip}}" }
       - { name: node1, ip: "{{ node_1_ip}}" }
@@ -66,6 +86,7 @@
     until: jobs.finished
     delay: 10
     retries: 300
-    with_items: 
+    with_items:
+      - "{{ bastion_creation.results }}"
       - "{{ master_creation.results }}"
       - "{{ worker_creation.results }}"

@@ -12,12 +12,19 @@ node_cpu: 2
 node_mem: 4096
 node_disk: 20
 
-# IP addresses
-master_ip: "{{ base_net }}.1"
-node_0_ip: "{{ base_net }}.2"
-node_1_ip: "{{ base_net }}.3"
-node_2_ip: "{{ base_net }}.4"
-node_3_ip: "{{ base_net }}.5"
+# Cluster IP addresses
+master_ip: "{{ base_net }}.32"
+node_0_ip: "{{ base_net }}.33"
+node_1_ip: "{{ base_net }}.34"
+node_2_ip: "{{ base_net }}.35"
+node_3_ip: "{{ base_net }}.36"
+
+#Bastion
+bastion_image: Debian 9
+bastion_ip: "{{ base_net }}.31"
+bastion_cores: 1
+bastion_memory: 1024
+bastion_disk: 5
 
 #SSH keys
 #You can give a key id

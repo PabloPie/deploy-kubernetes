@@ -2,9 +2,10 @@
 kube_token: l1u3tg.i54d3l3zi46znuuy
 
 # Node IPS
+gw_private_ip: "{{ hostvars['gw1']['private_ips'][0] }}"
 master_private_ip: "{{ hostvars['master']['private_ips'][0] }}"
-bastion_public_ip: "{{ hostvars['gw1']['public_ips'][0] }}"
-bastion_private_ip: "{{ hostvars['gw1']['private_ips'][0] }}"
+bastion_public_ip: "{{ hostvars['lb1']['public_ips'][0] }}"
+bastion_private_ip: "{{ hostvars['lb1']['private_ips'][0] }}"
 node0_private_ip: "{{ hostvars['node0']['private_ips'][0] }}"
 node1_private_ip: "{{ hostvars['node1']['private_ips'][0] }}"
 node2_private_ip: "{{ hostvars['node2']['private_ips'][0] }}"
@@ -20,7 +21,7 @@ mq_cluster_ip: [{% for host in groups['mq']%}"{{ hostvars[host]['backend_ip']}}:
 
 # Paths and URLS
 caliopen_config_path: "/etc/caliopen/configs"
-yaml_url: "https://raw.githubusercontent.com/CaliOpen/deploy-kubernetes/master"
+yaml_url: "https://raw.githubusercontent.com/CaliOpen/deploy-kubernetes/first_cleanup"
 caliopen_domain_name: "alpha.caliopen.org"
 
 # Options
