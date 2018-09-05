@@ -5,6 +5,7 @@ metadata:
 spec:
   selector:
     app: lmtpd
+  type: NodePort
   ports:
   - name: "lmtpd"
     port: 2525
