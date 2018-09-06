@@ -18,7 +18,7 @@ spec:
         app: lmtpd
     spec:
       containers:
-      - image: public-registry.caliopen.org/caliopen_broker:develop
+      - image: public-registry.caliopen.org/caliopen_lmtp
         imagePullPolicy: Always
         name: lmtpd
         ports:
