@@ -18,7 +18,7 @@ spec:
         app: identity-worker
     spec:
       containers:
-      - image: public-registry.caliopen.org/caliopen_identity_worker
+      - image: public-registry.caliopen.org/caliopen_identity_worker:develop
         imagePullPolicy: Always
         name: identity-worker
         volumeMounts:

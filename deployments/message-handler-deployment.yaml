@@ -18,7 +18,7 @@ spec:
         app: message-handler
     spec:
       containers:     
-      - image: public-registry.caliopen.org/caliopen_message_handler
+      - image: public-registry.caliopen.org/caliopen_message_handler:develop
         imagePullPolicy: Always
         name: message-handler
         volumeMounts:
