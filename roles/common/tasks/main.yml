@@ -5,7 +5,7 @@
     mode: 0600
 
 - name: Configure default ipv4 gateway
-  shell: ip route add default via {{ gw_ip }}
+  shell: ip route add default via {{ gw_private_ip }}
   ignore_errors: yes
 
 - name: add gandi apt key
