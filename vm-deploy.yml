@@ -68,10 +68,10 @@
       state: running
       farm: worker
     with_items:
-      - { name: node0, ip: "{{ node_0_ip}}" }
-      - { name: node1, ip: "{{ node_1_ip}}" }
-      - { name: node2, ip: "{{ node_2_ip}}" }
-      - { name: node3, ip: "{{ node_3_ip}}" }
+      - { name: node0, ip: "{{ node_0_ip }}" }
+      - { name: node1, ip: "{{ node_1_ip }}" }
+      - { name: node2, ip: "{{ node_2_ip }}" }
+      - { name: node3, ip: "{{ node_3_ip }}" }
     tags:
       - worker
       - kube_cluster
@@ -87,6 +87,6 @@
     delay: 10
     retries: 300
     with_items:
-      - "{{ bastion_creation.results }}"
-      - "{{ master_creation.results }}"
-      - "{{ worker_creation.results }}"
+      - "{{ bastion_creation }}"
+      - "{{ master_creation }}"
+      - "{{ worker_creation }}"
