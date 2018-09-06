@@ -29,6 +29,6 @@ spec:
         configMap:
           name: caliopen-config
           items:
-          - key: caliopen-IDs-poller.yaml
-            path: caliopen-IDs-poller.yaml
+          - key: idpoller.yaml
+            path: idpoller.yaml
       restartPolicy: Always

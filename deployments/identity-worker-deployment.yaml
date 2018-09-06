@@ -29,6 +29,6 @@ spec:
         configMap:
           name: caliopen-config
           items:
-          - key: caliopen-imap-worker.yaml
-            path: caliopen-imap-worker.yaml
+          - key: imapworker.yaml
+            path: imapworker.yaml
       restartPolicy: Always
