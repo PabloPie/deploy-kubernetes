@@ -2,7 +2,7 @@
   file: path={{ caliopen_config_path }} state=directory
 
 - name: copy caliopen configs
-  copy:
+  template:
     src: "{{ item }}"
     dest: "{{ caliopen_config_path }}"
     owner: "root"
