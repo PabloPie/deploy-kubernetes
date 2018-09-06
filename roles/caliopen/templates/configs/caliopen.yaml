@@ -18,7 +18,7 @@ cassandra:
     keyspace: caliopen
     hosts:
 {% for host in groups['store'] %}
-      - {{ hostvars[host]['backend_ip'] }}
+      - {{ hostvars[host]['private_ips'][0] }}
 {% endfor %}
     consistency_level: 1
     protocol_version: 3
@@ -38,7 +38,7 @@ message_queue:
 object_store:
     db_size_limit: 1048576
     service: s3
-    endpoint: {{ hostvars['object_store1']['backend_ip'] }}:9000
+    endpoint: {{ hostvars['object-store1']['private_ips'][0] }}:9000
     access_key: {{ object_store_access_key }}
     secret_key: {{ object_store_secret_key }}
     location: eu-fr-paris

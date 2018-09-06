@@ -7,11 +7,11 @@ store_name: cassandra                           # backend for remote identities 
 store_settings:
   hosts: # many allowed
 {% for host in groups['store'] %}
-    - {{ hostvars[host]['backend_ip'] }}
+    - {{ hostvars[host]['private_ips'][0] }}
 {% endfor %}
   keyspace: caliopen
   consistency_level: 1
 #messaging system
-nats_url: nats://{{ hostvars['mq1']['backend_ip'] }}:4222
+nats_url: nats://{{ hostvars['mq1']['private_ips'][0] }}:4222
 nats_topics:                                    # NATS topics for each kind of remote identities
   imap: IMAPfetcher

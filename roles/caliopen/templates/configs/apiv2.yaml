@@ -6,14 +6,14 @@ ApiConfig:
     backend_settings:
       hosts:
 {% for host in groups['store'] %}
-      - {{ hostvars[host]['backend_ip'] }}
+      - {{ hostvars[host]['private_ips'][0] }}
 {% endfor %}
       keyspace: caliopen
       consistency_level: 1
       raw_size_limit: 1048576                                # max size in bytes for objects in db. Use S3 interface if larger.
       object_store: s3
       object_store_settings:
-        endpoint: {{ hostvars['object_store1']['backend_ip'] }}:9000
+        endpoint: {{ hostvars['object-store1']['private_ips'][0] }}:9000
         access_key: {{ object_store_access_key }}
         secret_key: {{ object_store_secret_key }}
         location: eu-fr-paris
@@ -30,15 +30,15 @@ ApiConfig:
     index_settings:
       hosts:
 {% for host in groups['store'] %}
-      - http://{{ hostvars[host]['backend_ip'] }}:9200
+      - http://{{ hostvars[host]['private_ips'][0] }}:9200
 {% endfor %}
   NatsConfig:
-    url: nats://{{ hostvars['mq1']['backend_ip'] }}:4222
+    url: nats://{{ hostvars['mq1']['private_ips'][0] }}:4222
     outSMTP_topic: outboundSMTP     # topic's name to post "send" draft order
     contacts_topic: contactAction   # topic's name to post messages regarding contacts' events
   swaggerSpec: /etc/caliopen/swagger.json #absolute path or relative path to go.server bin
   RedisConfig:
-    host: {{ hostvars['cache1']['backend_ip'] }}:6379
+    host: {{ hostvars['cache1']['private_ips'][0] }}:6379
     password: ""      #no password set
     db: 0             #use default db
   NotifierConfig:
@@ -50,4 +50,4 @@ ProxyConfig:
   port: 31415
   routes:
   - /api/v2/: 127.0.0.1:6544
-  - /: {{ hostvars['api1']['backend_ip'] }}:6543         # route "/" catch all other requests
+  - /: {{ hostvars['api1']['private_ips'][0] }}:6543         # route "/" catch all other requests
