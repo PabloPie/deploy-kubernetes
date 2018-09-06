@@ -8,7 +8,7 @@
     - kubeadm
 
 - name: reset kubeadm
-  command: kubeadm reset
+  command: kubeadm reset --force
   when: kubeadm_reset
 
 - name: kubeadm init
