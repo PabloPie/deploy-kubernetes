@@ -26,6 +26,8 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /etc/caliopen
+        - name: ca-certs
+          mountPath: /etc/ssl/certs
       volumes:
       - name: config-volume
         configMap:
@@ -35,4 +37,12 @@ spec:
             path: apiv2.yaml
           - key: swagger.json
             path: swagger.json
+      - name: ca-certs
+        configMap:
+          name: ca-certs
+          items:
+          - key: alpha.caliopen.org.crt
+            path: alpha.caliopen.org.crt
+          - key: beta.caliopen.org.crt
+            path: beta.caliopen.org.crt
       restartPolicy: Always
