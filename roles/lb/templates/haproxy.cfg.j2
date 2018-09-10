@@ -61,10 +61,17 @@ frontend caliopen
 	use_backend frontend_back if frontend
 	use_backend dashboard_back if dashboard
 
+frontend lmtp
+	bind {{ bastion_private_ip }}:2525
+	mode tcp
+
+	default_backend lmtp_backend
+
 backend frontend_back
 	mode http
 	balance leastconn
-	http-check expect status 200
+	option httpchk
+	http-check expect ! rstatus ^5
 
     server master {{ master_private_ip }}:30400 check
     server node0  {{ node0_private_ip }}:30400 check
@@ -75,7 +82,8 @@ backend frontend_back
 backend apiv1_back
 	mode http
 	balance leastconn
-	http-check expect status 200
+	option httpchk
+	http-check expect ! rstatus ^5
 
     server master {{ master_private_ip }}:31416 check
     server node0  {{ node0_private_ip }}:31416 check
@@ -86,7 +94,8 @@ backend apiv1_back
 backend apiv2_back
 	mode http
 	balance leastconn
-	http-check expect status 200
+	option httpchk
+	http-check expect ! rstatus ^5
 
     server master {{ master_private_ip }}:31415 check
     server node0  {{ node0_private_ip }}:31415 check
@@ -97,7 +106,8 @@ backend apiv2_back
 backend dashboard_back
 	mode http
 	balance leastconn
-	http-check expect status 200
+	option httpchk
+	http-check expect ! rstatus ^5
 
 	acl authOK http_auth(admin)
 	http-request auth realm k8s-dashboard if !authOK
@@ -107,3 +117,14 @@ backend dashboard_back
     server node1  {{ node1_private_ip }}:31045 check
     server node2  {{ node2_private_ip }}:31045 check
     server node3  {{ node3_private_ip }}:31045 check
+
+backend lmtp_backend
+	mode tcp
+	balance leastconn
+	option smtpchk
+
+	server master {{ master_private_ip }}:32525 check
+    server node0  {{ node0_private_ip }}:32525 check
+    server node1  {{ node1_private_ip }}:32525 check
+    server node2  {{ node2_private_ip }}:32525 check
+    server node3  {{ node3_private_ip }}:32525 check
