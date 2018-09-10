@@ -23,8 +23,21 @@
     - coredns
   tags: [ config, system ]
 
+- name: Ensures cert directory exists
+  file: path="/etc/caliopen/certs" state=directory
+  tags: config
+
+- name: copy caliopen certs
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/caliopen/certs"
+    owner: "root"
+    mode: 0600
+  with_fileglob:
+    - "files/*.crt"
+
 - name: create cert configmap
-  shell: kubectl create configmap ca-certs --from-file={{ yaml_url }}/roles/lb/files/{{ caliopen_domain_name }}.crt
+  shell: kubectl create configmap ca-certs --from-file=/etc/caliopen/certs
   tags: ca-certs
 
 - name: create services
