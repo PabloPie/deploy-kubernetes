@@ -17,6 +17,15 @@ spec:
         tier: backend
         app: apiv1
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - external
       containers:
       - image: public-registry.caliopen.org/caliopen_apiv1:develop
         imagePullPolicy: Always

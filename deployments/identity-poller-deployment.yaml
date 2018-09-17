@@ -17,6 +17,15 @@ spec:
         tier: remote-identities
         app: identity-poller
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - internal
       containers:
       - image: public-registry.caliopen.org/caliopen_identity_poller:develop
         imagePullPolicy: Always

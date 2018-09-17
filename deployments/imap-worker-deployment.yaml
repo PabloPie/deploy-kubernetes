@@ -1,22 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: identity-worker
+  name: imap-worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: identity-worker
+      app: imap-worker
   #strategy:
   #  type: RollingUpdate
   #    maxUnavailable: 50
   template:
     metadata:
       labels:
-        type: identity-worker
+        type: imap-worker
         tier: remote-identities
-        app: identity-worker
+        app: imap-worker
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - internal
       containers:
       - image: public-registry.caliopen.org/caliopen_identity_worker:develop
         imagePullPolicy: Always

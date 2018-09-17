@@ -17,10 +17,19 @@ spec:
         tier: backend
         app: apiv2
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - external
       containers:
       - image: public-registry.caliopen.org/caliopen_api:develop
-        imagePullPolicy: Always
         name: apiv2
+        imagePullPolicy: Always
         ports:
         - containerPort: 31415
         volumeMounts:
