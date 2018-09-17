@@ -34,9 +34,16 @@ spec:
         - containerPort: 4000
         env:
         - name: CALIOPEN_API_HOSTNAME
-          value: "api.beta.caliopen.org"
+          valueFrom:
+            configMapKeyRef:
+              name: frontend-config
+              key: api_hostname
         - name: CALIOPEN_API_PROTOCOL
-          value: "https"
+            configMapKeyRef:
+              name: frontend-config
+              key: api_protocol
         - name: CALIOPEN_API_PORT
-          value: "443"
+            configMapKeyRef:
+              name: frontend-config
+              key: api_port
       restartPolicy: Always
