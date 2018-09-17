@@ -1,0 +1,20 @@
+- name: create production namespace
+  shell: kubectl create namespace {{ item }}
+  with_items:
+    - "{{ prod_namespace }}"
+    - "{{ test_namespace }}"
+  tags: namespace
+
+- name: label internal nodes
+  shell: kubectl label node {{ item }} type=external
+  with_items:
+    - node0
+    - node1
+  tags: nodeAffinities
+
+- name: label external nodes
+  shell: kubectl label node {{ item }} type=internal
+  with_items:
+    - node2
+    - node3
+  tags: nodeAffinities

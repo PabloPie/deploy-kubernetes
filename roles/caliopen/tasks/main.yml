@@ -1,47 +1,10 @@
-- name: Ensures {{ caliopen_config_path }} dir exists
-  file: path={{ caliopen_config_path }} state=directory
-  tags: config
+---
+- import: namespaces_labels.yml
 
-- name: copy caliopen configs
-  template:
-    src: "{{ item }}"
-    dest: "{{ caliopen_config_path }}"
-    owner: "root"
-    mode: 0600
-  with_fileglob:
-    - "templates/configs/*"
-  tags: config
-
-- name: create caliopen configs
-  shell: kubectl create configmap caliopen-config --from-file={{ caliopen_config_path }}
-  ignore_errors: yes
-  tags: config
-
-- name: create system configs
-  shell: kubectl apply -f {{ yaml_url }}/configs/{{ item }}-config.yaml
-  with_items:
-    - coredns
-  tags: [ config, system ]
-
-- name: Ensures cert directory exists
-  file: path="/etc/caliopen/certs" state=directory
-  tags: config
-
-- name: copy caliopen certs
-  copy:
-    src: "{{ item }}"
-    dest: "/etc/caliopen/certs"
-    owner: "root"
-    mode: 0600
-  with_fileglob:
-    - "files/*.crt"
-
-- name: create cert configmap
-  shell: kubectl create configmap ca-certs --from-file=/etc/caliopen/certs
-  tags: ca-certs
+- import: configs_certs.yml
 
 - name: create services
-  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
+  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml -n {{ prod_namespace }}
   with_items:
     - apiv2
     - apiv1
@@ -50,23 +13,23 @@
   tags: service
 
 - name: create go app deployments
-  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml -n {{ prod_namespace }}
   with_items:
     - lmtpd
     - apiv2
     - identity-poller
-    - identity-worker
+    - imap-worker
   tags: [ go, deployment ]
 
 - name: create python app deployments
-  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml -n {{ prod_namespace }}
   with_items:
-    - message-handler
+    - mq-worker
     - apiv1
   tags: [ python, deployment ]
 
 - name: create frontend app deployments
-  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml -n {{ prod_namespace }}
   with_items:
     - frontend
   tags: [ frontend, deployment ]

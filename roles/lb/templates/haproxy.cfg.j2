@@ -69,62 +69,54 @@ frontend lmtp
 
 backend frontend_back
 	mode http
-	balance leastconn
+	balance roundrobin
 	option httpchk
 	http-check expect ! rstatus ^5
 
-    server master {{ master_private_ip }}:30400 check
     server node0  {{ node0_private_ip }}:30400 check
     server node1  {{ node1_private_ip }}:30400 check
-    server node2  {{ node2_private_ip }}:30400 check
-    server node3  {{ node3_private_ip }}:30400 check
+    server master {{ master_private_ip }}:30400 check backup
 
 backend apiv1_back
 	mode http
-	balance leastconn
+	balance roundrobin
 	option httpchk
 	http-check expect ! rstatus ^5
 
-    server master {{ master_private_ip }}:31416 check
     server node0  {{ node0_private_ip }}:31416 check
     server node1  {{ node1_private_ip }}:31416 check
-    server node2  {{ node2_private_ip }}:31416 check
-    server node3  {{ node3_private_ip }}:31416 check
+    server master {{ master_private_ip }}:31416 check backup
 
 backend apiv2_back
 	mode http
-	balance leastconn
+	balance roundrobin
 	option httpchk
 	http-check expect ! rstatus ^5
 
-    server master {{ master_private_ip }}:31415 check
     server node0  {{ node0_private_ip }}:31415 check
     server node1  {{ node1_private_ip }}:31415 check
-    server node2  {{ node2_private_ip }}:31415 check
-    server node3  {{ node3_private_ip }}:31415 check
+    server master {{ master_private_ip }}:31415 check backup
 
 backend dashboard_back
 	mode http
-	balance leastconn
+	balance roundrobin
 	option httpchk
 	http-check expect ! rstatus ^5
 
 	acl authOK http_auth(admin)
 	http-request auth realm k8s-dashboard if !authOK
 
-    server master {{ master_private_ip }}:31045 check
     server node0  {{ node0_private_ip }}:31045 check
     server node1  {{ node1_private_ip }}:31045 check
     server node2  {{ node2_private_ip }}:31045 check
     server node3  {{ node3_private_ip }}:31045 check
+    server master {{ master_private_ip }}:31045 check backup
 
 backend lmtp_backend
 	mode tcp
-	balance leastconn
+	balance roundrobin
 	option smtpchk
 
-	server master {{ master_private_ip }}:32525 check
-    server node0  {{ node0_private_ip }}:32525 check
-    server node1  {{ node1_private_ip }}:32525 check
     server node2  {{ node2_private_ip }}:32525 check
     server node3  {{ node3_private_ip }}:32525 check
+    server master {{ master_private_ip }}:32525 check backup
