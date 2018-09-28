@@ -2,29 +2,30 @@
 
 ##Common
 image: Ubuntu 16.04 LTS
-vlan_name: kube_vlan
+vlan_name: alpha_vlan
 base_net: 192.168.1
 vlan_net: "{{ base_net }}.0/24"
-datacenter: FR-SD5
+datacenter: FR-SD3
 
 #Cluster nodes, including master
 node_cpu: 2
 node_mem: 4096
 node_disk: 20
-#Data disks
-cassandra_disk: 5
-elasticsearch_disk: 5
-minio_disk: 5
 
-#Master
-master_ip: "{{ base_net }}.1"
+# Cluster IP addresses
+master_ip: "{{ base_net }}.132"
+node_0_ip: "{{ base_net }}.133"
+node_1_ip: "{{ base_net }}.134"
+node_2_ip: "{{ base_net }}.135"
+node_3_ip: "{{ base_net }}.136"
 
 #Bastion
-bastion_ip: "{{ base_net }}.254"
+bastion_image: Debian 9
+bastion_ip: "{{ base_net }}.131"
 bastion_cores: 1
-bastion_memory: 512
+bastion_memory: 1024
 bastion_disk: 5
 
 #SSH keys
 #You can give a key id
-gandi_ssh_key_id: 41934
+gandi_ssh_key_id: 43083

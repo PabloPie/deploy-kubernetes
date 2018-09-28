@@ -16,10 +16,10 @@
     - "{{ caliopen_domain_name }}.key"
 
 - name: create pem file
-  shell: cat {{ caliopen_domain_name }}.crt {{ caliopen_domain_name }}.key >> alpha-certs.pem
+  shell: cat {{ caliopen_domain_name }}.crt {{ caliopen_domain_name }}.key >> beta-certs.pem
   args:
     chdir: /etc/haproxy/certs
-    creates: alpha-certs.pem
+    creates: beta-certs.pem
 
 - name: restart haproxy service
   service:

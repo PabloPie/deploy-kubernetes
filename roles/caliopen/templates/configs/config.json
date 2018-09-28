@@ -1,20 +1,19 @@
 {
-	"version": "23",
+	"version": "19",
 	"credential": {
-		"accessKey": "CALIOPEN_ACCESS_KEY_",
-		"secretKey": "CALIOPEN_SECRET_KEY_BE_GOOD_AND_LIVE_OLD"
+		"accessKey": "{{ object_store_access_key }}",
+		"secretKey": "{{ object_store_secret_key }}"
 	},
-	"region": "eu-fr-localhost",
+	"region": "eu-fr-paris",
 	"browser": "off",
-	"domain": "",
-	"storageclass": {
-		"standard": "",
-		"rrs": ""
-	},
-	"cache": {
-		"drives": [],
-		"expiry": 90,
-		"exclude": []
+	"logger": {
+		"console": {
+			"enable": true
+		},
+		"file": {
+			"enable": true,
+			"filename": "/var/log/minio.log"
+		}
 	},
 	"notify": {
 		"amqp": {
@@ -31,47 +30,6 @@
 				"internal": false,
 				"noWait": false,
 				"autoDeleted": false
-			}
-		},
-		"elasticsearch": {
-			"1": {
-				"enable": false,
-				"format": "",
-				"url": "",
-				"index": ""
-			}
-		},
-		"kafka": {
-			"1": {
-				"enable": false,
-				"brokers": null,
-				"topic": ""
-			}
-		},
-		"mqtt": {
-			"1": {
-				"enable": false,
-				"broker": "",
-				"topic": "",
-				"qos": 0,
-				"clientId": "",
-				"username": "",
-				"password": "",
-				"reconnectInterval": 0,
-				"keepAliveInterval": 0
-			}
-		},
-		"mysql": {
-			"1": {
-				"enable": false,
-				"format": "",
-				"dsnString": "",
-				"table": "",
-				"host": "",
-				"port": "",
-				"user": "",
-				"password": "",
-				"database": ""
 			}
 		},
 		"nats": {
@@ -93,6 +51,23 @@
 				}
 			}
 		},
+		"elasticsearch": {
+			"1": {
+				"enable": false,
+				"format": "",
+				"url": "",
+				"index": ""
+			}
+		},
+		"redis": {
+			"1": {
+				"enable": false,
+				"format": "",
+				"address": "",
+				"password": "",
+				"key": ""
+			}
+		},
 		"postgresql": {
 			"1": {
 				"enable": false,
@@ -106,19 +81,41 @@
 				"database": ""
 			}
 		},
-		"redis": {
+		"kafka": {
 			"1": {
 				"enable": false,
-				"format": "",
-				"address": "",
-				"password": "",
-				"key": ""
+				"brokers": null,
+				"topic": ""
 			}
 		},
 		"webhook": {
 			"1": {
 				"enable": false,
 				"endpoint": ""
+			}
+		},
+		"mysql": {
+			"1": {
+				"enable": false,
+				"format": "",
+				"dsnString": "",
+				"table": "",
+				"host": "",
+				"port": "",
+				"user": "",
+				"password": "",
+				"database": ""
+			}
+		},
+		"mqtt": {
+			"1": {
+				"enable": false,
+				"broker": "",
+				"topic": "",
+				"qos": 0,
+				"clientId": "",
+				"username": "",
+				"password": ""
 			}
 		}
 	}

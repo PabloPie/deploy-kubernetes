@@ -32,59 +32,91 @@ defaults
 	errorfile 503 /etc/haproxy/errors/503.http
 	errorfile 504 /etc/haproxy/errors/504.http
 
+userlist admin
+	user caliope-dashboard password {{ dashboard_password }}
+
 frontend http
 	mode http
 	bind *:80
 	#Redirect HTTP traffic to HTTPS
-    http-request redirect scheme https code 301 if !{ ssl_fc }
+	http-request redirect scheme https code 301 if !{ ssl_fc }
 
 frontend caliopen
-	bind *:443 ssl crt /etc/haproxy/certs/alpha-certs.pem
+	bind *:443 ssl crt /etc/haproxy/certs/beta-certs.pem
 	mode http
 
 	option forwardfor
 	option http-server-close
+	http-request set-header X-Client-IP %[src]
 
- 	acl frontend ssl_fc_sni -i k8s-client.{{ caliopen_domain_name }}
-    acl api ssl_fc_sni -i k8s-api.{{ caliopen_domain_name }}
-    acl dashboard ssl_fc_sni -i k8s-dash.{{ caliopen_domain_name }}
+	acl frontend ssl_fc_sni -i web.{{ caliopen_domain_name }}
+	acl api ssl_fc_sni -i api.{{ caliopen_domain_name }}
+	acl apiv2 path_beg -i /api/v2
+	acl apiv1 path_beg -i /api/v1
+	acl dashboard ssl_fc_sni -i dash.{{ caliopen_domain_name }}
 
-  	use_backend api_back if api
-  	use_backend frontend_back if frontend
-  	use_backend dashboard_back if dashboard
+	# apiv2 has to go first so it matches first
+	use_backend apiv2_back if api apiv2
+	use_backend apiv1_back if api apiv1
+	use_backend frontend_back if frontend
+	use_backend dashboard_back if dashboard
+
+frontend lmtp
+	bind {{ bastion_private_ip }}:2525
+	mode tcp
+
+	default_backend lmtp_backend
 
 backend frontend_back
 	mode http
 	balance roundrobin
-	option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
-	http-check expect status 200
-	http-request set-header Host alpha.caliopen.org
+	option httpchk
+	http-check expect ! rstatus ^5
 
-    server master {{ master_private_ip }}:30080 check port 30880 send-proxy
-    server node0  {{ node0_private_ip }}:30080 check port 30880 send-proxy
-    server node1  {{ node1_private_ip }}:30080 check port 30880 send-proxy
-    server node2  {{ node2_private_ip }}:30080 check port 30880 send-proxy
+    server node0  {{ node0_private_ip }}:30400 check
+    server node1  {{ node1_private_ip }}:30400 check
+    server master {{ master_private_ip }}:30400 check backup
 
-backend api_back
+backend apiv1_back
 	mode http
 	balance roundrobin
-	option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
-	http-check expect status 200
-  	http-request set-header Host api.caliopen.org
+	option httpchk
+	http-check expect ! rstatus ^5
 
-    server master {{ master_private_ip }}:30080 check port 30880 send-proxy
-    server node0  {{ node0_private_ip }}:30080 check port 30880 send-proxy
-    server node1  {{ node1_private_ip }}:30080 check port 30880 send-proxy
-    server node2  {{ node2_private_ip }}:30080 check port 30880 send-proxy
+    server node0  {{ node0_private_ip }}:31416 check
+    server node1  {{ node1_private_ip }}:31416 check
+    server master {{ master_private_ip }}:31416 check backup
+
+backend apiv2_back
+	mode http
+	balance roundrobin
+	option httpchk
+	http-check expect ! rstatus ^5
+
+    server node0  {{ node0_private_ip }}:31415 check
+    server node1  {{ node1_private_ip }}:31415 check
+    server master {{ master_private_ip }}:31415 check backup
 
 backend dashboard_back
 	mode http
 	balance roundrobin
-	option httpchk GET /healthz HTTP/1.1\r\nHost:\ _
-	http-check expect status 200
-  	http-request set-header Host dashboard.caliopen.org
+	option httpchk
+	http-check expect ! rstatus ^5
 
-    server master {{ master_private_ip }}:30080 check port 30880 send-proxy
-    server node0  {{ node0_private_ip }}:30080 check port 30880 send-proxy
-    server node1  {{ node1_private_ip }}:30080 check port 30880 send-proxy
-    server node2  {{ node2_private_ip }}:30080 check port 30880 send-proxy
+	acl authOK http_auth(admin)
+	http-request auth realm k8s-dashboard if !authOK
+
+    server node0  {{ node0_private_ip }}:31045 check
+    server node1  {{ node1_private_ip }}:31045 check
+    server node2  {{ node2_private_ip }}:31045 check
+    server node3  {{ node3_private_ip }}:31045 check
+    server master {{ master_private_ip }}:31045 check backup
+
+backend lmtp_backend
+	mode tcp
+	balance roundrobin
+	option smtpchk
+
+    server node2  {{ node2_private_ip }}:32525 check
+    server node3  {{ node3_private_ip }}:32525 check
+    server master {{ master_private_ip }}:32525 check backup

@@ -1,26 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: message-handler
+  name: mq-worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: message-handler
+      app: mq-worker
   #strategy:
   #  type: RollingUpdate
   #    maxUnavailable: 50
   template:
     metadata:
       labels:
-        type: message-handler
+        type: mq-worker
         tier: backend
-        app: message-handler
+        app: mq-worker
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - internal
       containers:     
-      - image: public-registry.caliopen.org/caliopen_message-handler
+      - image: public-registry.caliopen.org/caliopen_message_handler:develop
         imagePullPolicy: Always
-        name: message-handler
+        name: mq-worker
         volumeMounts:
         - name: config-volume
           mountPath: /etc/caliopen

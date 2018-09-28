@@ -1,8 +1,11 @@
-- name: install ssh authorized keys
-  template: src=ssh_authorized_keys dest=/root/.ssh/authorized_keys mode=0600
+- name: copy ssh keys
+  copy:
+    src: files/ssh_authorized_keys
+    dest: /root/.ssh/authorized_keys
+    mode: 0600
 
 - name: Configure default ipv4 gateway
-  shell: ip route add default via {{ bastion_ip }}
+  shell: ip route add default via {{ gw_private_ip }}
   ignore_errors: yes
 
 - name: add gandi apt key
@@ -15,6 +18,3 @@
   apt:
     update_cache: yes
     upgrade: dist
-
-- name: turn off swap
-  command: swapoff -a

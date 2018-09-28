@@ -20,7 +20,7 @@
 - name: install docker ce
   apt: package={{ item }} update_cache=yes
   with_items:
-    - docker-ce
+    - docker-ce=17.03.3~ce-0~ubuntu-xenial
 
 - name: add user to group docker
   command: usermod -aG docker {{ ansible_user }}

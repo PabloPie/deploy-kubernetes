@@ -1,15 +1,15 @@
-- hosts: bastion_node
+- hosts: lb
   become: yes
   remote_user: root
   roles:
-    - bastion
+    - common
     - kube
     - lb
   tags:
     - infra
     - bastion
 
-- hosts: master_node
+- hosts: master
   become: yes
   remote_user: root
   roles:
@@ -19,7 +19,7 @@
     - master
   tags: infra
 
-- hosts: worker_node
+- hosts: worker
   become: yes
   remote_user: root
   roles:
@@ -29,7 +29,7 @@
     - worker
   tags: infra
 
-- hosts: master_node
+- hosts: master
   become: yes
   remote_user: root
   roles:

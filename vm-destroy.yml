@@ -11,7 +11,7 @@
   - name: delete bastion
     gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
-      instance_names: bastion
+      instance_names: lb1
       datacenter: "{{ datacenter }}"
       state: deleted
     tags: bastion
@@ -27,6 +27,7 @@
       - node0
       - node1
       - node2
+      - node3
     tags: kube_cluster
     async: 7200
     poll: 0
@@ -41,11 +42,3 @@
     retries: 300
     with_items:
       - "{{ node_deletion.results }}"
-
-  - gandi_vlan:
-      gandi_api_key: "{{ gandi_api_key }}"
-      name: "{{ vlan_name }}"
-      datacenter: "{{ datacenter }}"
-      state: deleted
-    tags: vlan
-    name: delete vlan

@@ -8,21 +8,12 @@
     - "vm_vars/settings.yaml"
 
   tasks:
-  - name: vlan creation
-    gandi_vlan:
-      gandi_api_key: "{{ gandi_api_key }}"
-      name: "{{ vlan_name }}"
-      datacenter: "{{ datacenter }}"
-      gateway: "{{ bastion_ip }}"
-      subnet: "{{ vlan_net }}"
-    tags: vlan
-
   - name: bastion creation
     gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
-      name: bastion
+      name: lb1
       machine_type: custom
-      image: "{{ image }}"
+      image: "{{ bastion_image }}"
       datacenter: "{{ datacenter }}"
       sshkey_ids:
         - "{{ gandi_ssh_key_id }}"
@@ -31,7 +22,7 @@
       disk: "{{ bastion_disk }}"
       interfaces: {'publics': [{'ipv4': 'auto'}], 'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ bastion_ip }}"}]}
       state: running
-      farm: bastion_node
+      farm: lb
     tags: bastion
     async: 7200
     poll: 0
@@ -49,11 +40,11 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
-      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ item.master_ip }}"}]}
+      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ item.ip }}"}]}
       state: running
-      farm: master_node
+      farm: master
     with_items:
-      - { name: master, master_ip: "{{ master_ip }}" }
+      - { name: master, ip: "{{ master_ip }}" }
     tags:
       - master
       - kube_cluster
@@ -73,14 +64,14 @@
       cores: "{{ node_cpu }}"
       memory: "{{ node_mem }}"
       disk: "{{ node_disk }}"
-      extra_disks: [{'name': "{{ item.db_disk }}", 'size': "{{ cassandra_disk }}"}, {'name': "{{ item.index_disk }}", 'size': "{{ elasticsearch_disk }}"}, {'name': "{{ item.store_disk }}", 'size': "{{ minio_disk }}"}]
-      interfaces: {'privates': ['vlan': "{{ vlan_name }}"]}
+      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ item.ip }}"}]}
       state: running
-      farm: worker_node
+      farm: worker
     with_items:
-      - { name: node0, db_disk: db0, index_disk: index0, store_disk: store0 }
-      - { name: node1, db_disk: db1, index_disk: index1, store_disk: store1 }
-      - { name: node2, db_disk: db2, index_disk: index2, store_disk: store2 }
+      - { name: node0, ip: "{{ node_0_ip }}" }
+      - { name: node1, ip: "{{ node_1_ip }}" }
+      - { name: node2, ip: "{{ node_2_ip }}" }
+      - { name: node3, ip: "{{ node_3_ip }}" }
     tags:
       - worker
       - kube_cluster
@@ -95,7 +86,7 @@
     until: jobs.finished
     delay: 10
     retries: 300
-    with_items: 
-      - "{{ bastion_creation.results }}"
-      - "{{ master_creation.results }}"
-      - "{{ worker_creation.results }}"
+    with_items:
+      - "{{ bastion_creation }}"
+      - "{{ master_creation }}"
+      - "{{ worker_creation }}"

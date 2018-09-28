@@ -1,137 +1,41 @@
-- name: Ensures {{ caliopen_config_path }} dir exists
-  file: path={{ caliopen_config_path }} state=directory
+---
+- import: namespaces_labels.yml
 
-- name: copy caliopen configs
-  copy:
-    src: "{{ item }}"
-    dest: "{{ caliopen_config_path }}"
-    owner: "root"
-    mode: 0600
-  with_fileglob:
-    - "templates/configs/*"
-
-- name: copy external services files
-  template:
-    src: templates/services/external-{{ item }}-service.yaml.j2
-    dest: /etc/caliopen/external-{{ item }}-service.yaml
-  with_items:
-    - smtp
-    - storage
-
-- name: create caliopen configs
-  shell: kubectl create configmap caliopen-config --from-file={{ caliopen_config_path }}
-  ignore_errors: yes
+- import: configs_certs.yml
 
 - name: create services
-  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
+  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml -n {{ prod_namespace }}
   with_items:
-    - api
+    - apiv2
     - apiv1
-    - broker
+    - lmtpd
     - frontend
-    - nats
-    - redis
-
-- name: create external smtp service
-  shell: kubectl apply -f /etc/caliopen/external-smtp-service.yaml
-  tags: smtp
-  when: externalsmtp
-
-- name: create external storage service
-  shell: kubectl apply -f /etc/caliopen/external-storage-service.yaml
-  tags: storage
-  when: externalstorage
-
-- name: create localstorage
-  shell: kubectl apply -f {{ yaml_url }}/storageclass/{{ item }}-storageclass.yaml
-  with_items:
-    - cassandra
-    - elasticsearch
-    - minio
-  tags: storage
-  when: not externalstorage
-
-- name: create persistent volumes
-  shell: kubectl apply -f {{ yaml_url }}/persistentvolumes/{{ item }}-persistentvolume.yaml
-  with_items:
-    - cassandra
-    - elasticsearch
-    - minio
-  tags: storage
-  when: not externalstorage
-
-- name: create headless services
-  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
-  with_items:
-    - cassandra
-    - elasticsearch
-    - minio
-  tags: storage
-  when: not externalstorage
-
-- name: create storage deployments
-  shell: kubectl apply -f {{ yaml_url }}/statefulsets/{{ item }}-statefulset.yaml
-  with_items:
-    - cassandra
-    - elasticsearch
-    - minio
-  tags: storage
-  when: not externalstorage
-
-- name: create basic deployments
-  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
-  with_items:
-    - redis
-    - nats
+  tags: service
 
 - name: create go app deployments
-  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml -n {{ prod_namespace }}
   with_items:
-    - broker
-    - api
-  tags: go
+    - lmtpd
+    - apiv2
+    - identity-poller
+    - imap-worker
+  tags: [ go, deployment ]
 
 - name: create python app deployments
-  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml -n {{ prod_namespace }}
   with_items:
-    - message-handler
+    - mq-worker
     - apiv1
-  tags: python
+  tags: [ python, deployment ]
 
 - name: create frontend app deployments
-  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml
+  shell: kubectl apply -f {{ yaml_url }}/deployments/{{ item }}-deployment.yaml -n {{ prod_namespace }}
   with_items:
     - frontend
-  tags: frontend
+  tags: [ frontend, deployment ]
 
-- name: copy htpasswd file
-  copy:
-    src: "files/auth"
-    dest: "{{ caliopen_config_path }}"
-    owner: "root"
-    mode: 0600
-
-- name: create htpasswd secret
-  shell: kubectl create secret generic basic-auth --from-file=auth --namespace kube-system
-  args:
-    chdir: "{{ caliopen_config_path }}"
-
-- name: setup ingress controller and default backend
-  shell: kubectl apply -f {{ yaml_url }}/ingress/{{ item }}-ingress.yaml
-  with_items:
-    - setup
-  tags: ingress
-
-- name: create nginx and dashboard services
+- name: create dashboard service
   shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
   with_items:
-    - nginx
     - dashboard
-  tags: ingress
-
-- name: create ingress rules
-  shell: kubectl apply -f {{ yaml_url }}/ingress/{{ item }}-ingress.yaml
-  with_items:
-    - caliopen
-    - dashboard
-  tags: ingress
+  tags: service

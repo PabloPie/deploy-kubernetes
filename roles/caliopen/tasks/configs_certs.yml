@@ -1,0 +1,46 @@
+- name: Ensures {{ caliopen_config_path }} dir exists
+  file: path={{ caliopen_config_path }} state=directory
+  tags: config
+
+- name: copy caliopen configs
+  template:
+    src: "{{ item }}"
+    dest: "{{ caliopen_config_path }}"
+    owner: "root"
+    mode: 0600
+  with_fileglob:
+    - "templates/configs/*"
+  tags: config
+
+- name: create caliopen configs
+  shell: kubectl create configmap caliopen-config --from-file={{ caliopen_config_path }} -n {{ prod_namespace }}
+  ignore_errors: yes
+  tags: config
+
+- name: create frontend configmap
+  shell: kubectl create configmap frontend-config --from-literal=api_hostname=api.{{ caliopen_domain_name }} --from-literal=api_protocol=https --from-literal=api_port=443 -n {{ prod_namespace }}
+  tags: config
+
+- name: create system configs
+  shell: kubectl apply -f {{ yaml_url }}/configs/{{ item }}-config.yaml
+  with_items:
+    - coredns
+  tags: [ config, system ]
+
+- name: Ensures cert directory exists
+  file: path="/etc/caliopen/certs" state=directory
+  tags: ca-certs
+
+- name: copy caliopen certs
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/caliopen/certs"
+    owner: "root"
+    mode: 0600
+  with_fileglob:
+    - "files/*.crt"
+  tags: ca-certs
+
+- name: create cert configmap
+  shell: kubectl create configmap ca-certs --from-file=/etc/caliopen/certs -n {{ prod_namespace }}
+  tags: ca-certs

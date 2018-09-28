@@ -5,6 +5,9 @@ metadata:
 spec:
   selector:
     app: frontend
+  type: NodePort
   ports:
   - name: "frontend"
     port: 4000
+    targetPort: 4000
+    nodePort: 30400

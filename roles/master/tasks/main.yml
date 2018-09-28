@@ -1,3 +1,6 @@
+- name: turn off swap
+  command: swapoff -a
+
 - name: install kube utilities
   apt: package={{ item }} update_cache=yes
   with_items:
@@ -5,7 +8,7 @@
     - kubeadm
 
 - name: reset kubeadm
-  command: kubeadm reset
+  command: kubeadm reset --force
   when: kubeadm_reset
 
 - name: kubeadm init

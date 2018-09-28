@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: apiv1
+  name: apiv2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: apiv1
+      app: apiv2
   #strategy:
   #  type: RollingUpdate
   #    maxUnavailable: 50
@@ -15,7 +15,7 @@ spec:
       labels:
         type: api
         tier: backend
-        app: apiv1
+        app: apiv2
     spec:
       affinity:
         nodeAffinity:
@@ -27,23 +27,31 @@ spec:
                 values:
                 - external
       containers:
-      - image: public-registry.caliopen.org/caliopen_apiv1:develop
+      - image: public-registry.caliopen.org/caliopen_api:develop
+        name: apiv2
         imagePullPolicy: Always
-        name: apiv1
         ports:
-        - containerPort: 6543
+        - containerPort: 31415
         volumeMounts:
-          - name: config-volume
-            mountPath: /etc/caliopen
+        - name: config-volume
+          mountPath: /etc/caliopen
+        - name: ca-certs
+          mountPath: /etc/ssl/certs
       volumes:
       - name: config-volume
         configMap:
           name: caliopen-config
           items:
-          - key: apiv1.ini
-            path: apiv1.ini
-          - key: caliopen.yaml
-            path: caliopen.yaml
+          - key: apiv2.yaml
+            path: apiv2.yaml
           - key: swagger.json
             path: swagger.json
+      - name: ca-certs
+        configMap:
+          name: ca-certs
+          items:
+          - key: alpha.caliopen.org.crt
+            path: alpha.caliopen.org.crt
+          - key: beta.caliopen.org.crt
+            path: beta.caliopen.org.crt
       restartPolicy: Always

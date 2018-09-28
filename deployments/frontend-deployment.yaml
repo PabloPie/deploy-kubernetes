@@ -17,17 +17,33 @@ spec:
         tier: frontend
         app: frontend
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - external
       containers:
-      - image: public-registry.caliopen.org/caliopen_frontend
+      - image: public-registry.caliopen.org/caliopen_frontend:develop
         imagePullPolicy: Always
         name: frontend
         ports:
         - containerPort: 4000
         env:
         - name: CALIOPEN_API_HOSTNAME
-          value: "api"
+          valueFrom:
+            configMapKeyRef:
+              name: frontend-config
+              key: api_hostname
         - name: CALIOPEN_API_PROTOCOL
-          value: "http"
+            configMapKeyRef:
+              name: frontend-config
+              key: api_protocol
         - name: CALIOPEN_API_PORT
-          value: "31415"
+            configMapKeyRef:
+              name: frontend-config
+              key: api_port
       restartPolicy: Always

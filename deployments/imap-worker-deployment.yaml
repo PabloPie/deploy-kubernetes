@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imap-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: imap-worker
+  #strategy:
+  #  type: RollingUpdate
+  #    maxUnavailable: 50
+  template:
+    metadata:
+      labels:
+        type: imap-worker
+        tier: remote-identities
+        app: imap-worker
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - internal
+      containers:
+      - image: public-registry.caliopen.org/caliopen_identity_worker:develop
+        imagePullPolicy: Always
+        name: identity-worker
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/caliopen
+        - name: ca-certs
+          mountPath: /etc/ssl/certs
+      volumes:
+      - name: config-volume
+        configMap:
+          name: caliopen-config
+          items:
+          - key: imapworker.yaml
+            path: imapworker.yaml
+      - name: ca-certs
+        configMap:
+          name: ca-certs
+          items:
+          - key: alpha.caliopen.org.crt
+            path: alpha.caliopen.org.crt
+          - key: beta.caliopen.org.crt
+            path: beta.caliopen.org.crt
+      restartPolicy: Always

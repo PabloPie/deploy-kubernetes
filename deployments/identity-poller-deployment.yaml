@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: apiv1
+  name: identity-poller
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: apiv1
+      app: identity-poller
   #strategy:
   #  type: RollingUpdate
   #    maxUnavailable: 50
   template:
     metadata:
       labels:
-        type: api
-        tier: backend
-        app: apiv1
+        type: identity-poller
+        tier: remote-identities
+        app: identity-poller
     spec:
       affinity:
         nodeAffinity:
@@ -25,25 +25,19 @@ spec:
               - key: type
                 operator: In
                 values:
-                - external
+                - internal
       containers:
-      - image: public-registry.caliopen.org/caliopen_apiv1:develop
+      - image: public-registry.caliopen.org/caliopen_identity_poller:develop
         imagePullPolicy: Always
-        name: apiv1
-        ports:
-        - containerPort: 6543
+        name: identity-poller
         volumeMounts:
-          - name: config-volume
-            mountPath: /etc/caliopen
+        - name: config-volume
+          mountPath: /etc/caliopen
       volumes:
       - name: config-volume
         configMap:
           name: caliopen-config
           items:
-          - key: apiv1.ini
-            path: apiv1.ini
-          - key: caliopen.yaml
-            path: caliopen.yaml
-          - key: swagger.json
-            path: swagger.json
+          - key: idpoller.yaml
+            path: idpoller.yaml
       restartPolicy: Always
