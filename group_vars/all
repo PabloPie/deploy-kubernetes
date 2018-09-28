@@ -1,6 +1,8 @@
 # Kube data
 # Can be generated with kubeadm
-kube_token: l1u3tg.i54d3l3zi46znuuy
+kube_token:
+prod_namespace: production
+test_namespace: develop
 
 # Node IPS
 gw_private_ip: "{{ hostvars['gw1']['private_ips'][0] }}"
@@ -12,23 +14,13 @@ node1_private_ip: "{{ hostvars['node1']['private_ips'][0] }}"
 node2_private_ip: "{{ hostvars['node2']['private_ips'][0] }}"
 node3_private_ip: "{{ hostvars['node3']['private_ips'][0] }}"
 
-# External services IP
-# cassandra_cluster_ips: [{% for host in groups['store']%}"{{ hostvars[host]['private_ips'][0]}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
-# es_cluster_ips: [{% for host in groups['store']%}"{{ hostvars[host]['private_ips'][0]}}:9200"{%- if not loop.last -%},{% endif %}{% endfor %}]
-# minio_cluster_ips: [{% for host in groups['s3']%}"{{ hostvars[host]['private_ips'][0]}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
-# smtp_server_ip: "{{ hostvars['mx']['private_ips'][0] }}"
-# cache_cluster_ips: [{% for host in groups['cache']%}"{{ hostvars[host]['private_ips'][0]}}:9090"{%- if not loop.last -%},{% endif %}{% endfor %}]
-# mq_cluster_ip: [{% for host in groups['mq']%}"{{ hostvars[host]['private_ips'][0]}}:4222"{%- if not loop.last -%},{% endif %}{% endfor %}]
-
 # Paths and URLS
 caliopen_config_path: "/etc/caliopen/configs"
-yaml_url: "https://raw.githubusercontent.com/CaliOpen/deploy-kubernetes/first_cleanup"
+yaml_url: "https://raw.githubusercontent.com/CaliOpen/deploy-kubernetes/master"
 caliopen_domain_name: "beta.caliopen.org"
 
 # Options
 kubeadm_reset: true
-externalstorage: true
-externalsmtp: true
 ansible_user: root
 
 # Passwords
@@ -37,5 +29,7 @@ object_store_access_key:
 object_store_secret_key:
 vault_api_username:
 vault_api_password:
+vault_lmtp_username:
+vault_lmtp_password:
 vault_worker_username:
 vault_worker_password:
