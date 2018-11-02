@@ -27,7 +27,7 @@ spec:
                 values:
                 - internal
       containers:
-      - image: public-registry.caliopen.org/caliopen_identity_poller:develop
+      - image: public-registry.caliopen.org/caliopen_identity_poller
         imagePullPolicy: Always
         name: identity-poller
         volumeMounts:

@@ -27,7 +27,7 @@ spec:
                 values:
                 - external
       containers:
-      - image: public-registry.caliopen.org/caliopen_api:develop
+      - image: public-registry.caliopen.org/caliopen_api
         name: apiv2
         imagePullPolicy: Always
         ports:

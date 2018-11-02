@@ -27,7 +27,7 @@ spec:
                 values:
                 - external
       containers:
-      - image: public-registry.caliopen.org/caliopen_frontend:develop
+      - image: public-registry.caliopen.org/caliopen_frontend
         imagePullPolicy: Always
         name: frontend
         ports:
@@ -39,10 +39,12 @@ spec:
               name: frontend-config
               key: api_hostname
         - name: CALIOPEN_API_PROTOCOL
+          valueFrom:
             configMapKeyRef:
               name: frontend-config
               key: api_protocol
         - name: CALIOPEN_API_PORT
+          valueFrom:
             configMapKeyRef:
               name: frontend-config
               key: api_port

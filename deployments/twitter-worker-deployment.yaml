@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mq-worker
+  name: twitter-worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mq-worker
+      app: twitter-worker
   #strategy:
   #  type: RollingUpdate
   #    maxUnavailable: 50
   template:
     metadata:
       labels:
-        type: mq-worker
-        tier: backend
-        app: mq-worker
+        type: twitter-worker
+        tier: remote-identities
+        app: twitter-worker
     spec:
       affinity:
         nodeAffinity:
@@ -26,18 +26,28 @@ spec:
                 operator: In
                 values:
                 - internal
-      containers:     
-      - image: public-registry.caliopen.org/caliopen_message_handler
+      containers:
+      - image: public-registry.caliopen.org/caliopen_twitter_worker
         imagePullPolicy: Always
-        name: mq-worker
+        name: identity-worker
         volumeMounts:
         - name: config-volume
           mountPath: /etc/caliopen
+        - name: ca-certs
+          mountPath: /etc/ssl/certs
       volumes:
       - name: config-volume
         configMap:
           name: caliopen-config
           items:
-          - key: caliopen.yaml
-            path: caliopen.yaml
+          - key: imapworker.yaml
+            path: imapworker.yaml
+      - name: ca-certs
+        configMap:
+          name: ca-certs
+          items:
+          - key: alpha.caliopen.org.crt
+            path: alpha.caliopen.org.crt
+          - key: beta.caliopen.org.crt
+            path: beta.caliopen.org.crt
       restartPolicy: Always
