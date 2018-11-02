@@ -9,10 +9,14 @@ metadata:
 data:
   filebeat.yml: |-
     filebeat.config:
-      inputs:
-        # Mounted `filebeat-inputs` configmap:
-        path: ${path.config}/inputs.d/*.yml
-        # Reload inputs configs as they change:
+      fields_under_root: true
+      fields:
+        program: k8s_cluster
+        hostname: ${FILEBEAT_HOST:${HOSTNAME}}
+      prospectors:
+        # Mounted `filebeat-prospectors` configmap:
+        path: ${path.config}/prospectors.d/*.yml
+        # Reload prospectors configs as they change:
         reload.enabled: false
       modules:
         path: ${path.config}/modules.d/*.yml
@@ -20,23 +24,25 @@ data:
         reload.enabled: false
     
     output.logstash:
-      hosts: ["logstash:5044"] 
+      hosts: [ "${LOGSTASH_HOST}:${LOGSTASH_PORT}" ]
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: filebeat-inputs
+  name: filebeat-prospectors
   namespace: monitoring
   labels:
     k8s-app: filebeat
 data:
   kubernetes.yml: |-
-    - type: docker
-      containers.ids:
-      - "*"
-      processors:
-        - add_kubernetes_metadata:
-            in_cluster: true
+    - type: log
+      paths:
+        - /var/log/containers/*.log
+      exclude_files: ['^weave-net.*\.log', '^kube-proxy.*\.log']
+      exclude_lines: ['.*DEBUG.*heartbeat.*','.*DEBUG.*Received options.*']
+      symlinks: true
+      json.add_error_key: true
+      json.message_key: log
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -78,13 +84,16 @@ spec:
           mountPath: /etc/filebeat.yml
           readOnly: true
           subPath: filebeat.yml
-        - name: inputs
-          mountPath: /usr/share/filebeat/inputs.d
+        - name: prospectors
+          mountPath: /usr/share/filebeat/prospectors.d
           readOnly: true
         - name: data
           mountPath: /usr/share/filebeat/data
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: varlog
+          mountPath: /var/log
           readOnly: true
       volumes:
       - name: config
@@ -94,10 +103,13 @@ spec:
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
-      - name: inputs
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: prospectors
         configMap:
           defaultMode: 0600
-          name: filebeat-inputs
+          name: filebeat-prospectors
       # data folder stores a registry of read status for all files, so we don't send everything again on a Filebeat pod restart
       - name: data
         hostPath:
