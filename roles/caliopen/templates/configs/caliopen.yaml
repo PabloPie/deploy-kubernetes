@@ -11,8 +11,33 @@ delivery_agent:
     direct: True
 
 elasticsearch:
-    url: http://elasticsearch:9200
-    mappings_version: v5
+    url:
+{% for host in groups['store'] %}
+      - http://{{ hostvars[host]['private_ips'][0] }}:9200
+{% endfor %}
+    mappings_version: v6
+    shards:
+        - a8168e03-ac4d-4858-b41d-0b4f861e6391
+        - 441babfe-5da2-48f4-9a31-578ecd115bd6
+        - 61a7972c-761b-4d64-8ed7-00a89ca3d1e7
+        - f6cd287d-28f4-4bcb-8df5-b108bf73e8b5
+        - 33d19f2f-4bdb-4889-bdde-028587fb7dd3
+        - 8725cdb7-0277-4264-a48d-27e7cdfd46a1
+        - f621c6df-9ff1-4d6b-ac7c-aa5673930b74
+        - 396c1627-f5bc-45d6-8ace-40560728b61c
+        - 34407c14-1a6e-4865-b861-7fdf9e18ed71
+        - 212f990a-d925-439f-99b5-cf23d028111d
+        - 21f50b67-0f13-4f15-a139-ac7f209d4e11
+        - 12d87be9-d1d1-49f7-aa8e-3c9f1ba2f6d2
+        - 4377610c-a4ca-4236-9bc8-aa8361fb97b9
+        - 141cdb82-7950-46ad-a046-55469067a1fa
+        - 6245cfcb-42c8-48d0-b395-77eae256b3e2
+        - 75ef5bc0-08bc-442b-b8b7-ce72b1232556
+        - e7fb6898-b661-4d02-becb-a1bf4bffd28b
+        - cbcbb997-27b6-41ae-a5ec-3f5773686651
+        - 671c4f2d-e217-4529-a2da-fc7949137b02
+        - 21a2b9cb-f224-4b95-bf99-373017bbb6ec
+
 
 cassandra:
     keyspace: caliopen
@@ -29,11 +54,11 @@ lmtp:
 
 broker:
     port: 2525
-    host: broker
+    host: lmtpd
 
 message_queue:
     port: 4222
-    host: nats
+    host: nats://{{ hostvars['mq1']['private_ips'][0] }}:4222
 
 object_store:
     db_size_limit: 1048576
@@ -42,9 +67,11 @@ object_store:
     access_key: {{ object_store_access_key }}
     secret_key: {{ object_store_secret_key }}
     location: eu-fr-paris
+    buckets:
+        raw_messages: caliopen-raw-messages
+        temporary_attachments: caliopen-tmp-attachments
 
 system:
-    max_users: 100
     default_tags:
         -
             name: inbox
@@ -58,17 +85,28 @@ system:
             label: Caliopen
             importance_level: 2
 
-default_domain: caliopen.local
+default_domain: alpha.caliopen.org
 
 internal_domains:
     - caliopen.local
-    - brainstorm.fr
+    - alpha.caliopen.org
+    - beta.caliopen.org
 
 blacklistes:
     mx:
         - mx.bad.guy
 
+qualifiers:
+    geoip:
+        file: "/var/lib/geoip2/GeoLite2-Country.mmdb"
+
+apiV1:
+    strict_patch: false
+
 key_discovery:
     dns:
+        enable: False
+        name_server: 4.4.4.4
+    hkp:
         enable: True
-        name_server: 8.8.8.8
+        url: https://pgp.mit.edu/pks/lookup

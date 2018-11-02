@@ -1028,30 +1028,6 @@
       }
     },
     "/v2/users/{user_id}": {
-      "delete": {
-        "description": "Not Yet Implemented",
-        "tags": [
-          "users"
-        ],
-        "security": [
-          {
-            "basicAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "route not implemented, should raise an error"
-          }
-        }
-      },
       "patch": {
         "description": "Partially implemented. Currently only for changing password.",
         "tags": [
@@ -1156,18 +1132,10 @@
                     "excerpt": {
                       "type": "string"
                     },
-                    "identities": {
+                    "user_identities": {
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "identifier": {
-                            "type": "string"
-                          },
-                          "type": {
-                            "type": "string"
-                          }
-                        }
+                        "type": "string"
                       }
                     },
                     "importance_level": {
@@ -1346,18 +1314,10 @@
                 "excerpt": {
                   "type": "string"
                 },
-                "identities": {
+                "user_identities": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "identifier": {
-                        "type": "string"
-                      },
-                      "type": {
-                        "type": "string"
-                      }
-                    }
+                    "type": "string"
                   }
                 },
                 "importance_level": {
@@ -1631,9 +1591,13 @@
                       "send",
                       "set_read",
                       "set_unread",
-                      "reset_password"
+                      "reset_password",
+                      "delete"
                     ]
                   }
+                },
+                "params": {
+                  "type": "object"
                 }
               },
               "additionalProperties": false,
@@ -1724,18 +1688,10 @@
                 "excerpt": {
                   "type": "string"
                 },
-                "identities": {
+                "user_identities": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "identifier": {
-                        "type": "string"
-                      },
-                      "type": {
-                        "type": "string"
-                      }
-                    }
+                    "type": "string"
                   }
                 },
                 "importance_level": {
@@ -2284,22 +2240,58 @@
                   "items": {
                     "type": "object",
                     "properties": {
+                      "credentials": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
                       "display_name": {
+                        "type": "string"
+                      },
+                      "identity_id": {
                         "type": "string"
                       },
                       "identifier": {
                         "type": "string"
                       },
+                      "infos": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
+                      "last_check": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "imap",
+                          "smtp"
+                        ]
+                      },
                       "status": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                          "active",
+                          "inactive",
+                          "deleted"
+                        ]
                       },
                       "type": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                          "local",
+                          "remote"
+                        ]
                       },
                       "user_id": {
                         "type": "string"
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   }
                 }
               }
@@ -2331,9 +2323,121 @@
         }
       }
     },
-    "/v1/identities/remotes": {
+    "/v2/identities/remotes": {
+      "get": {
+        "description": "returns the list of user's remote identities",
+        "tags": [
+          "identities"
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Remote identities returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "number of remote identities found for user"
+                },
+                "remote_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "credentials": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
+                      "display_name": {
+                        "type": "string"
+                      },
+                      "identity_id": {
+                        "type": "string"
+                      },
+                      "identifier": {
+                        "type": "string"
+                      },
+                      "infos": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
+                      "last_check": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "imap",
+                          "smtp"
+                        ]
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "active",
+                          "inactive",
+                          "deleted"
+                        ]
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "local",
+                          "remote"
+                        ]
+                      },
+                      "user_id": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
-        "description": "create a new remote identity for an user",
+        "description": "create a new remote identity for user",
         "tags": [
           "identities"
         ],
@@ -2353,24 +2457,60 @@
             "schema": {
               "type": "object",
               "properties": {
+                "credentials": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
                 "display_name": {
                   "type": "string"
                 },
                 "identifier": {
                   "type": "string"
                 },
+                "infos": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "protocol": {
+                  "type": "string",
+                  "enum": [
+                    "imap",
+                    "smtp"
+                  ]
+                },
                 "status": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive",
+                    "deleted"
+                  ]
                 },
                 "type": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "local",
+                    "remote"
+                  ]
                 },
-                "infos": {
-                  "type": "object"
+                "user_id": {
+                  "type": "string"
                 }
-              }
+              },
+              "required": [
+                "identifier",
+                "protocol"
+              ],
+              "additionalProperties": false
             }
           }
+        ],
+        "produces": [
+          "application/json"
         ],
         "responses": {
           "200": {
@@ -2380,7 +2520,10 @@
               "properties": {
                 "location": {
                   "type": "string",
-                  "description": "url to retrieve new remote identity's infos at /remotes/{identifier}"
+                  "description": "url to retrieve new remote identity's at identities/remotes/{identifier}"
+                },
+                "identifier": {
+                  "type": "string"
                 }
               }
             }
@@ -2388,9 +2531,9 @@
         }
       }
     },
-    "/v1/identities/remotes/{identifier}": {
+    "/v2/identities/remotes/{identifier}": {
       "get": {
-        "description": "returns an user remote identity",
+        "description": "returns a remote identity belonging to user",
         "tags": [
           "identities"
         ],
@@ -2416,26 +2559,419 @@
             "schema": {
               "type": "object",
               "properties": {
+                "credentials": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
                 "display_name": {
+                  "type": "string"
+                },
+                "identity_id": {
                   "type": "string"
                 },
                 "identifier": {
                   "type": "string"
                 },
+                "infos": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "last_check": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "protocol": {
+                  "type": "string",
+                  "enum": [
+                    "imap",
+                    "smtp"
+                  ]
+                },
                 "status": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive",
+                    "deleted"
+                  ]
                 },
                 "type": {
+                  "type": "string",
+                  "enum": [
+                    "local",
+                    "remote"
+                  ]
+                },
+                "user_id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "401": {
+            "description": "Unauthorized access",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Remote identity not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a remote identity belonging to user",
+        "tags": [
+          "identities"
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Remote identity deleted"
+          },
+          "401": {
+            "description": "Unauthorized access",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Contact not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "update a remote identity with rfc5789 and rfc7396 specifications",
+        "tags": [
+          "identities"
+        ],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "patch",
+            "in": "body",
+            "required": true,
+            "description": "the patch to apply. See 'Caliopen Patch RFC' within /doc directory.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "current_state": {
+                  "type": "object",
+                  "properties": {
+                    "credentials": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "display_name": {
+                      "type": "string"
+                    },
+                    "identity_id": {
+                      "type": "string"
+                    },
+                    "identifier": {
+                      "type": "string"
+                    },
+                    "infos": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "last_check": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "protocol": {
+                      "type": "string",
+                      "enum": [
+                        "imap",
+                        "smtp"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "active",
+                        "inactive",
+                        "deleted"
+                      ]
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "local",
+                        "remote"
+                      ]
+                    },
+                    "user_id": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "credentials": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "display_name": {
+                  "type": "string"
+                },
+                "identity_id": {
+                  "type": "string"
+                },
+                "identifier": {
                   "type": "string"
                 },
                 "infos": {
-                  "type": "object"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "last_check": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "protocol": {
+                  "type": "string",
+                  "enum": [
+                    "imap",
+                    "smtp"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive",
+                    "deleted"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "local",
+                    "remote"
+                  ]
+                },
+                "user_id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "current_state"
+              ]
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "Update successful. No body is returned."
+          },
+          "400": {
+            "description": "json payload malformed",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
           },
           "401": {
             "description": "Unauthorized access",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden patch. Server is refusing to apply the given patch's properties to this ressource",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "identity not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "json is valid but patch was semantically malformed or unprocessable",
             "schema": {
               "type": "object",
               "properties": {
@@ -8121,6 +8657,12 @@
                       "excerpt": {
                         "type": "string"
                       },
+                      "subject": {
+                        "type": "string"
+                      },
+                      "protocol": {
+                        "type": "string"
+                      },
                       "total_count": {
                         "type": "integer",
                         "format": "int32"
@@ -8296,6 +8838,12 @@
                 "excerpt": {
                   "type": "string"
                 },
+                "subject": {
+                  "type": "string"
+                },
+                "protocol": {
+                  "type": "string"
+                },
                 "total_count": {
                   "type": "integer",
                   "format": "int32"
@@ -8414,18 +8962,10 @@
                 "discussion_id": {
                   "type": "string"
                 },
-                "identities": {
+                "user_identities": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "identifier": {
-                        "type": "string"
-                      },
-                      "type": {
-                        "type": "string"
-                      }
-                    }
+                    "type": "string"
                   }
                 },
                 "message_id": {
@@ -8479,7 +9019,7 @@
                 }
               },
               "required": [
-                "identities"
+                "user_identities"
               ],
               "additionalProperties": false
             }
@@ -8621,6 +9161,20 @@
             "type": "integer",
             "required": false,
             "description": "number of pages to skip from the response"
+          },
+          {
+            "name": "msg_id",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "description": "if provided with range[] param, specify a message_id around which messages will be fetched"
+          },
+          {
+            "name": "range[]",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "description": "boundaries param if message_id param is provided [before, after]"
           }
         ],
         "produces": [
@@ -8714,18 +9268,10 @@
                       "excerpt": {
                         "type": "string"
                       },
-                      "identities": {
+                      "user_identities": {
                         "type": "array",
                         "items": {
-                          "type": "object",
-                          "properties": {
-                            "identifier": {
-                              "type": "string"
-                            },
-                            "type": {
-                              "type": "string"
-                            }
-                          }
+                          "type": "string"
                         }
                       },
                       "importance_level": {
@@ -8987,18 +9533,10 @@
                     "excerpt": {
                       "type": "string"
                     },
-                    "identities": {
+                    "user_identities": {
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "identifier": {
-                            "type": "string"
-                          },
-                          "type": {
-                            "type": "string"
-                          }
-                        }
+                        "type": "string"
                       }
                     },
                     "importance_level": {
@@ -9177,18 +9715,10 @@
                 "excerpt": {
                   "type": "string"
                 },
-                "identities": {
+                "user_identities": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "identifier": {
-                        "type": "string"
-                      },
-                      "type": {
-                        "type": "string"
-                      }
-                    }
+                    "type": "string"
                   }
                 },
                 "importance_level": {
@@ -9618,18 +10148,10 @@
                 "excerpt": {
                   "type": "string"
                 },
-                "identities": {
+                "user_identities": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "identifier": {
-                        "type": "string"
-                      },
-                      "type": {
-                        "type": "string"
-                      }
-                    }
+                    "type": "string"
                   }
                 },
                 "importance_level": {
@@ -10026,9 +10548,13 @@
                       "send",
                       "set_read",
                       "set_unread",
-                      "reset_password"
+                      "reset_password",
+                      "delete"
                     ]
                   }
+                },
+                "params": {
+                  "type": "object"
                 }
               },
               "additionalProperties": false,
@@ -10119,18 +10645,10 @@
                 "excerpt": {
                   "type": "string"
                 },
-                "identities": {
+                "user_identities": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "identifier": {
-                        "type": "string"
-                      },
-                      "type": {
-                        "type": "string"
-                      }
-                    }
+                    "type": "string"
                   }
                 },
                 "importance_level": {
@@ -10316,18 +10834,10 @@
                 "excerpt": {
                   "type": "string"
                 },
-                "identities": {
+                "user_identities": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "identifier": {
-                        "type": "string"
-                      },
-                      "type": {
-                        "type": "string"
-                      }
-                    }
+                    "type": "string"
                   }
                 },
                 "importance_level": {
