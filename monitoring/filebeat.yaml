@@ -5,14 +5,12 @@ metadata:
   name: filebeat-config
   namespace: monitoring
   labels:
-    k8s-app: filebeat
+    app: filebeat
 data:
   filebeat.yml: |-
     filebeat.config:
-      fields_under_root: true
-      fields:
-        program: k8s_cluster
-        hostname: ${FILEBEAT_HOST:${HOSTNAME}}
+      path:
+        config: usr/share/filebeat
       prospectors:
         # Mounted `filebeat-prospectors` configmap:
         path: ${path.config}/prospectors.d/*.yml
@@ -32,40 +30,43 @@ metadata:
   name: filebeat-prospectors
   namespace: monitoring
   labels:
-    k8s-app: filebeat
+    app: filebeat
 data:
   kubernetes.yml: |-
     - type: log
       paths:
         - /var/log/containers/*.log
-      exclude_files: ['^weave-net.*\.log', '^kube-proxy.*\.log', '^kubernetes-dashboard.*\.log']
+      exclude_files: ['weave-net.*', 'kube-proxy.*', 'kubernetes-dashboard.*', 'filebeat.*']
       exclude_lines: ['.*DEBUG.*heartbeat.*','.*DEBUG.*Received options.*']
+      fields:
+        prog: k8s_cluster
+      fields_under_root: true
       symlinks: true
+      json.keys_under_root: true
+      overwrite_keys: true
       json.add_error_key: true
       json.message_key: log
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: filebeat
   namespace: monitoring
   labels:
-    k8s-app: filebeat
+    app: filebeat
 spec:
+  selector:
+    matchLabels:
+      app: filebeat
   template:
     metadata:
       labels:
-        k8s-app: filebeat
+        app: filebeat
     spec:
-      serviceAccountName: filebeat
       terminationGracePeriodSeconds: 30
       containers:
       - name: filebeat
         image: docker.elastic.co/beats/filebeat:5.6.12
-        args: [
-          "-c", "/etc/filebeat.yml",
-          "-e",
-        ]
         env:
         - name: LOGSTASH_HOST
           value: logstash
@@ -81,7 +82,7 @@ spec:
             memory: 100Mi
         volumeMounts:
         - name: config
-          mountPath: /etc/filebeat.yml
+          mountPath: usr/share/filebeat/filebeat.yml
           readOnly: true
           subPath: filebeat.yml
         - name: prospectors
@@ -98,7 +99,6 @@ spec:
       volumes:
       - name: config
         configMap:
-          defaultMode: 0600
           name: filebeat-config
       - name: varlibdockercontainers
         hostPath:
@@ -108,7 +108,6 @@ spec:
           path: /var/log
       - name: prospectors
         configMap:
-          defaultMode: 0600
           name: filebeat-prospectors
       # data folder stores a registry of read status for all files, so we don't send everything again on a Filebeat pod restart
       - name: data
