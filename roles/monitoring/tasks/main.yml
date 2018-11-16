@@ -1,4 +1,6 @@
 ---
+- name: create namespace monitoring
+  shell: kubectl create namespace monitoring
 
 - name: create dashboard
   shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml
@@ -9,7 +11,7 @@
 - import: config_pipeline.yml
 
 - name: create logging deployments
-  shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n {{ prod_namespace }}
+  shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n monitoring
   with_items:
     - filebeat
     - logstash
