@@ -1,11 +1,7 @@
-- name: Ensures /etc/logstash dir exists
-  file: path=/etc/logstash state=directory
-  tags: logstash
-
 - name: copy logstash configs
   template:
     src: "{{ item }}"
-    dest: "/etc/logstash"
+    dest: "/etc/caliopen"
     owner: "root"
     mode: 0600
   with_fileglob:
@@ -13,5 +9,5 @@
   tags: logstash
 
 - name: create logstash pipeline
-  shell: kubectl create configmap logstash-pipeline --from-file=/etc/logstash/logstash.conf -n monitoring
+  shell: kubectl create configmap logstash-pipeline --from-file=/etc/caliopen/logstash.conf -n monitoring
   tags: logstash

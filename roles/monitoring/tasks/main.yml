@@ -15,8 +15,8 @@
     - logstash
   tags: logging
 
-- name: create monitoring deployments
-  shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n {{ prod_namespace }}
-  with_items:
-    - prometheus
-  tags: monitoring
+# - name: create monitoring deployments
+#   shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n {{ prod_namespace }}
+#   with_items:
+#     - prometheus
+#   tags: monitoring
