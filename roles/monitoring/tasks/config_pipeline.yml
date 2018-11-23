@@ -1,11 +1,9 @@
-- name: copy logstash configs
+- name: copy logstash config
   template:
-    src: "{{ item }}"
+    src: "templates/logstash.conf"
     dest: "/etc/caliopen"
     owner: "root"
     mode: 0600
-  with_fileglob:
-    - "templates/*"
   tags: logstash
 
 - name: create logstash pipeline

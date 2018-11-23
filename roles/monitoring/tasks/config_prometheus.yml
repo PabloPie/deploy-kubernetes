@@ -1,0 +1,11 @@
+- name: copy logstash config
+  template:
+    src: "templates/prometheus.yml"
+    dest: "/etc/caliopen"
+    owner: "root"
+    mode: 0600
+  tags: prometheus
+
+- name: create logstash pipeline
+  shell: kubectl create configmap prometheus-config --from-file=/etc/caliopen/prometheus.yml -n monitoring
+  tags: prometheus
