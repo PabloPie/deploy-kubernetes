@@ -9,5 +9,5 @@ spec:
   ports:
   - name: "apiv2"
     port: 31415
-    targetPort: 31415
+    targetPort: 6544
     nodePort: 31415
