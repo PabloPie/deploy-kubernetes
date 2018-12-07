@@ -19,6 +19,7 @@
     - apiv2
     - identity-poller
     - imap-worker
+    - twitter-worker
   tags: [ go, deployment ]
 
 - name: create python app deployments
