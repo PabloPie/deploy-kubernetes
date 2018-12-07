@@ -14,7 +14,7 @@ spec:
     metadata:
       labels:
         type: twitter-worker
-        tier: remote-identities
+        tier: worker
         app: twitter-worker
     spec:
       affinity:
@@ -29,7 +29,7 @@ spec:
       containers:
       - image: public-registry.caliopen.org/caliopen_twitter_worker
         imagePullPolicy: Always
-        name: identity-worker
+        name: twitter-worker
         volumeMounts:
         - name: config-volume
           mountPath: /etc/caliopen
@@ -40,8 +40,8 @@ spec:
         configMap:
           name: caliopen-config
           items:
-          - key: imapworker.yaml
-            path: imapworker.yaml
+          - key: twitterworker.yaml
+            path: twitterworker.yaml
       - name: ca-certs
         configMap:
           name: ca-certs
