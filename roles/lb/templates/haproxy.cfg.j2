@@ -76,6 +76,12 @@ frontend logstash
 
 	default_backend lmtp_backend
 
+frontend prometheus
+	bind {{ bastion_private_ip }}:9090
+	mode http
+
+	default_backend prom_backend
+
 ##### Backends
 
 backend frontend_back
@@ -140,3 +146,12 @@ backend logstash_backend
     server node2  {{ node2_private_ip }}:30544 check
     server node3  {{ node3_private_ip }}:30544 check
     server master {{ master_private_ip }}:30544 check backup
+
+backend prom_backend
+	mode http
+	balance roundrobin
+	option httpchk
+
+    server node2  {{ node2_private_ip }}:31090 check
+    server node3  {{ node3_private_ip }}:31090 check
+    server master {{ master_private_ip }}:31090 check backup

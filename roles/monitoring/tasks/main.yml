@@ -17,8 +17,16 @@
     - logstash
   tags: logging
 
-# - name: create monitoring deployments
-#   shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n {{ prod_namespace }}
-#   with_items:
-#     - prometheus
-#   tags: monitoring
+- import: config_prometheus.yml
+
+- name: kube-system metric deployments
+  shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n {{ prod_namespace }}
+  with_items:
+    - metrics-server
+  tags: monitoring
+
+- name: monitoring deployments
+  shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n monitoring
+  with_items:
+    - prometheus
+  tags: monitoring
