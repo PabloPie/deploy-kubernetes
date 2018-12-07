@@ -1,6 +1,8 @@
 ApiConfig:
-  host: 0.0.0.0
-  port: 31415
+  listen_interface: 0.0.0.0
+  listen_port: 6544
+  hostname: https://api.{{ caliopen_domain_name }}
+  port: 443
   BackendConfig:
     backend_name: cassandra
     backend_settings:
@@ -33,20 +35,38 @@ ApiConfig:
       - http://{{ hostvars[host]['private_ips'][0] }}:9200
 {% endfor %}
   NatsConfig:
-    url: nats://{{ hostvars['mq1']['private_ips'][0] }}:4222
+    url: nats://192.168.1.60:4222
     outSMTP_topic: outboundSMTP     # topic's name to post "send" draft order
+    outIMAP_topic: outboundIMAP     # topic's name for "send" draft order via remote SMTP+IMAP
+    outTWITTER_topic: twitter_dm    # topics's name for "send" draft order via TWITTER
     contacts_topic: contactAction   # topic's name to post messages regarding contacts' events
+    keys_topic: discoverKeyAction   # topic-s name to post messages regarding public key discovery
+
   swaggerSpec: /etc/caliopen/swagger.json #absolute path or relative path to go.server bin
   RedisConfig:
-    host: {{ hostvars['cache1']['private_ips'][0] }}:6379
+    host: 192.168.1.50:6379
     password: ""      #no password set
     db: 0             #use default db
   NotifierConfig:
     base_url: https://{{ caliopen_domain_name }}
     admin_username: admin
     templates_path: "/etc/caliopen/notifiers/templates/"
+  Providers:                                                # temporary supported providers list for remote identities before moving this data into store facility
+  - name: gmail
+    protocol: email
+    infos:
+      client_id: {{ gmail_oauth_app_key }}
+      client_secret: {{ gmail_oauth_app_secret }}
+      imapserver: imap.gmail.com:993
+      smtpserver: smtp.gmail.com:587
+  - name: twitter
+    protocol: twitter
+    infos:
+      consumer_key: {{ twitter_oauth_app_key }}
+      consumer_secret: {{ twitter_oauth_app_secret }}
+
 ProxyConfig:
-  host: 0.0.0.0
+  listen_interface: 0.0.0.0
   port: 31415
   routes:
   - /api/v2/: 127.0.0.1:6544
