@@ -35,6 +35,8 @@ defaults
 userlist admin
 	user caliope-dashboard password {{ dashboard_password }}
 
+##### Frontends
+
 frontend http
 	mode http
 	bind *:80
@@ -61,11 +63,20 @@ frontend caliopen
 	use_backend frontend_back if frontend
 	use_backend dashboard_back if dashboard
 
+# Only visible within the private VLAN
 frontend lmtp
 	bind {{ bastion_private_ip }}:2525
 	mode tcp
 
 	default_backend lmtp_backend
+
+frontend logstash
+	bind {{ bastion_private_ip }}:5044
+	mode http
+
+	default_backend lmtp_backend
+
+##### Backends
 
 backend frontend_back
 	mode http
@@ -120,3 +131,12 @@ backend lmtp_backend
     server node2  {{ node2_private_ip }}:32525 check
     server node3  {{ node3_private_ip }}:32525 check
     server master {{ master_private_ip }}:32525 check backup
+
+backend logstash_backend
+	mode http
+	balance roundrobin
+	option httpchk
+
+    server node2  {{ node2_private_ip }}:30544 check
+    server node3  {{ node3_private_ip }}:30544 check
+    server master {{ master_private_ip }}:30544 check backup

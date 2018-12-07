@@ -33,9 +33,3 @@
   with_items:
     - frontend
   tags: [ frontend, deployment ]
-
-- name: create dashboard service
-  shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml
-  with_items:
-    - dashboard
-  tags: service

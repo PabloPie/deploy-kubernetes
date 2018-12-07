@@ -1,0 +1,13 @@
+- name: copy logstash configs
+  template:
+    src: "{{ item }}"
+    dest: "/etc/caliopen"
+    owner: "root"
+    mode: 0600
+  with_fileglob:
+    - "templates/*"
+  tags: logstash
+
+- name: create logstash pipeline
+  shell: kubectl create configmap logstash-pipeline --from-file=/etc/caliopen/logstash.conf -n monitoring
+  tags: logstash

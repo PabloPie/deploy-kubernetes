@@ -34,4 +34,5 @@
   remote_user: root
   roles:
     - caliopen
+    - monitoring
   tags: application
