@@ -33,3 +33,7 @@ vault_lmtp_username:
 vault_lmtp_password:
 vault_worker_username:
 vault_worker_password:
+twitter_oauth_app_key:
+twitter_oauth_app_secret:
+gmail_oauth_app_key:
+gmail_oauth_app_secret:
