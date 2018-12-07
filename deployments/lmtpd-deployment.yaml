@@ -27,7 +27,7 @@ spec:
                 values:
                 - internal
       containers:
-      - image: public-registry.caliopen.org/caliopen_broker
+      - image: public-registry.caliopen.org/caliopen_lmtpd
         imagePullPolicy: Always
         name: lmtpd
         ports:

@@ -27,7 +27,7 @@ spec:
                 values:
                 - internal
       containers:     
-      - image: public-registry.caliopen.org/caliopen_message_handler
+      - image: public-registry.caliopen.org/caliopen_mq_worker
         imagePullPolicy: Always
         name: mq-worker
         volumeMounts:

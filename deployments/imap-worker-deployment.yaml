@@ -27,7 +27,7 @@ spec:
                 values:
                 - internal
       containers:
-      - image: public-registry.caliopen.org/caliopen_identity_worker
+      - image: public-registry.caliopen.org/caliopen_imap_worker
         imagePullPolicy: Always
         name: identity-worker
         volumeMounts:
