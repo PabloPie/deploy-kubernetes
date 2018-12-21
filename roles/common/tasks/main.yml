@@ -18,3 +18,5 @@
   apt:
     update_cache: yes
     upgrade: dist
+
+- import: node_exporter.yml
