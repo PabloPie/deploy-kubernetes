@@ -13,7 +13,16 @@
   tags: config
 
 - name: create caliopen configs
-  shell: kubectl create configmap caliopen-config --from-file={{ caliopen_config_path }} -n {{ prod_namespace }}
+  shell: kubectl create configmap {{ name }}-config --from-file={{ name }}.{{ ext }} -n {{ prod_namespace }}
+  with_items:
+    - { name: "apiv1", ext: "ini"}
+    - { name: "apiv2", ext: "yaml"}
+    - { name: "caliopen", ext: "yaml"}
+    - { name: "idpoller", ext: "yaml"}
+    - { name: "imapworker", ext: "yaml"}
+    - { name: "lmtp", ext: "yaml"}
+    - { name: "swagger", ext: "json"}
+    - { name: "twitterworker", ext: "yaml"}
   ignore_errors: yes
   tags: config
 
@@ -26,21 +35,3 @@
   with_items:
     - coredns
   tags: [ config, system ]
-
-- name: Ensures cert directory exists
-  file: path="/etc/caliopen/certs" state=directory
-  tags: ca-certs
-
-- name: copy caliopen certs
-  copy:
-    src: "{{ item }}"
-    dest: "/etc/caliopen/certs"
-    owner: "root"
-    mode: 0600
-  with_fileglob:
-    - "files/*.crt"
-  tags: ca-certs
-
-- name: create cert configmap
-  shell: kubectl create configmap ca-certs --from-file=/etc/caliopen/certs -n {{ prod_namespace }}
-  tags: ca-certs

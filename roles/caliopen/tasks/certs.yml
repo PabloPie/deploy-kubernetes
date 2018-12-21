@@ -1,0 +1,17 @@
+- name: Ensures cert directory exists
+  file: path="/etc/caliopen/certs" state=directory
+  tags: ca-certs
+
+- name: copy caliopen certs
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/caliopen/certs"
+    owner: "root"
+    mode: 0600
+  with_fileglob:
+    - "files/*.crt"
+  tags: ca-certs
+
+- name: create cert configmap
+  shell: kubectl create configmap ca-certs --from-file=/etc/caliopen/certs -n {{ prod_namespace }}
+  tags: ca-certs
