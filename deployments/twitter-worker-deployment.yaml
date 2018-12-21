@@ -7,9 +7,6 @@ spec:
   selector:
     matchLabels:
       app: twitter-worker
-  #strategy:
-  #  type: RollingUpdate
-  #    maxUnavailable: 50
   template:
     metadata:
       labels:
@@ -51,4 +48,6 @@ spec:
             path: alpha.caliopen.org.crt
           - key: beta.caliopen.org.crt
             path: beta.caliopen.org.crt
+          - key: ca-certificates.crt
+            path: ca-certificates.crt
       restartPolicy: Always

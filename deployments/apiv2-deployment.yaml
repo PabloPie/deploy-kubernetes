@@ -59,4 +59,6 @@ spec:
             path: alpha.caliopen.org.crt
           - key: beta.caliopen.org.crt
             path: beta.caliopen.org.crt
+          - key: ca-certificates.crt
+            path: ca-certificates.crt
       restartPolicy: Always

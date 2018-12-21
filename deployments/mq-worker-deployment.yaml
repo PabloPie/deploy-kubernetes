@@ -7,9 +7,6 @@ spec:
   selector:
     matchLabels:
       app: mq-worker
-  #strategy:
-  #  type: RollingUpdate
-  #    maxUnavailable: 50
   template:
     metadata:
       labels:
