@@ -31,10 +31,11 @@ spec:
         imagePullPolicy: Always
         name: mq-worker
         volumeMounts:
-        - name: config-volume
-          mountPath: /etc/caliopen
+        - name: caliopen-conf-volume
+          mountPath: /etc/caliopen/caliopen.yaml
+          subPath: caliopen.yaml
       volumes:
-      - name: config-volume
+      - name: caliopen-conf-volume
         configMap:
           name: caliopen-config
           items:

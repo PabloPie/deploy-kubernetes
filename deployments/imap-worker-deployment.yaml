@@ -31,14 +31,15 @@ spec:
         imagePullPolicy: Always
         name: identity-worker
         volumeMounts:
-        - name: config-volume
-          mountPath: /etc/caliopen
+        - name: imapworker-conf-volume
+          mountPath: /etc/caliopen/imapworker.yaml
+          subPath: imapworker.yaml
         - name: ca-certs
           mountPath: /etc/ssl/certs
       volumes:
-      - name: config-volume
+      - name: imapworker-conf-volume
         configMap:
-          name: caliopen-config
+          name: imapworker-config
           items:
           - key: imapworker.yaml
             path: imapworker.yaml

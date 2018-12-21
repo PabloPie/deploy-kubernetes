@@ -7,9 +7,6 @@ spec:
   selector:
     matchLabels:
       app: apiv1
-  #strategy:
-  #  type: RollingUpdate
-  #    maxUnavailable: 50
   template:
     metadata:
       labels:
@@ -33,17 +30,32 @@ spec:
         ports:
         - containerPort: 6543
         volumeMounts:
-          - name: config-volume
-            mountPath: /etc/caliopen
+        - name: apiv1-conf-volume
+          mountPath: /etc/caliopen/apiv1.ini
+          subPath: apiv1.ini
+        - name: caliopen-conf-volume
+          mountPath: /etc/caliopen/caliopen.yaml
+          subPath: caliopen.yaml
+        - name: swagger-conf-volume
+          mountPath: /etc/caliopen/swagger.json
+          subPath: swagger.json
       volumes:
-      - name: config-volume
+      - name: apiv1-conf-volume
         configMap:
-          name: caliopen-config
+          name: apiv1-config
           items:
           - key: apiv1.ini
             path: apiv1.ini
+      - name: caliopen-conf-volume
+        configMap:
+          name: caliopen-config
+          items:
           - key: caliopen.yaml
             path: caliopen.yaml
+      - name: swagger-conf-volume
+        configMap:
+          name: swagger-config
+          items:
           - key: swagger.json
             path: swagger.json
       restartPolicy: Always

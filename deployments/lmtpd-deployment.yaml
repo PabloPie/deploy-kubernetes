@@ -33,12 +33,13 @@ spec:
         ports:
         - containerPort: 2525
         volumeMounts:
-        - name: config-volume
-          mountPath: /etc/caliopen
+        - name: lmtp-conf-volume
+          mountPath: /etc/caliopen/lmtp.yaml
+          subPath: lmtp.yaml
       volumes:
-      - name: config-volume
+      - name: lmtp-conf-volume
         configMap:
-          name: caliopen-config
+          name: lmtp-config
           items:
           - key: lmtp.yaml
             path: lmtp.yaml

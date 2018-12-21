@@ -31,14 +31,15 @@ spec:
         imagePullPolicy: Always
         name: twitter-worker
         volumeMounts:
-        - name: config-volume
-          mountPath: /etc/caliopen
+        - name: twitterworker-conf-volume
+          mountPath: /etc/caliopen/twitterworker.yaml
+          subPath: twitterworker.yaml
         - name: ca-certs
           mountPath: /etc/ssl/certs
       volumes:
-      - name: config-volume
+      - name: twitterworker-conf-volume
         configMap:
-          name: caliopen-config
+          name: twitterworker-config
           items:
           - key: twitterworker.yaml
             path: twitterworker.yaml
