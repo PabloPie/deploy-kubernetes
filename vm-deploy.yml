@@ -79,7 +79,7 @@
     poll: 0
     register: worker_creation
 
-  - name: wait for creation
+  - name: wait for bastion creation
     async_status:
       jid: "{{ item.ansible_job_id }}"
     register: jobs
@@ -88,5 +88,14 @@
     retries: 300
     with_items:
       - "{{ bastion_creation }}"
-      - "{{ master_creation }}"
-      - "{{ worker_creation }}"
+
+  - name: wait for node creation
+    async_status:
+      jid: "{{ item.ansible_job_id }}"
+    register: jobs
+    until: jobs.finished
+    delay: 10
+    retries: 300
+    with_items:
+      - "{{ master_creation.results }}"
+      - "{{ worker_creation.results }}"
