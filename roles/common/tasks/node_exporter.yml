@@ -6,7 +6,7 @@
     dest: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
   tags: node-exporter
 
-- name: Unarchive a file that needs to be downloaded (added in 2.0)
+- name: extract node exporter
   unarchive:
     src: /tmp/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
     dest: /usr/local/sbin/
