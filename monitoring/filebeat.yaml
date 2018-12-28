@@ -23,6 +23,7 @@ data:
     
     output.logstash:
       hosts: [ "${LOGSTASH_HOST}:${LOGSTASH_PORT}" ]
+      ssl.enabled: false
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -36,7 +37,7 @@ data:
     - type: log
       paths:
         - /var/log/containers/*.log
-      exclude_files: ['weave-net.*', 'kube-proxy.*', 'kubernetes-dashboard.*', 'filebeat.*']
+      exclude_files: ['weave-net.*', 'kube-proxy.*', 'kubernetes-dashboard.*', 'filebeat.*', 'metrics-server.*', 'logstash.*']
       exclude_lines: ['.*DEBUG.*heartbeat.*','.*DEBUG.*Received options.*']
       fields:
         prog: k8s_cluster
