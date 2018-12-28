@@ -27,13 +27,17 @@
 
 The current configuration deploys the machines in the cluster (including the master node) exclusively with private ips. External access goes through an extra machine, external to the cluster, running HAProxy. Its configuration can be found in ```roles/lb/templates/haproxy.cfg.j2```.
 
-### SMTP Server:
+### SMTP Server
 
-For now the cluster must be deployed with an external SMTP server.
+For now the cluster must be deployed with an external Postfix server.
 
-### Storage:
+### Storage
 
-The cluster must be deployed with external Cassandra, Minio, and Elasticsearch clusters.
+The cluster must be deployed with external Cassandra, Minio, Elasticsearch and Redis clusters.
+
+### Message queue
+
+Currently, playbooks do not deploy the NATS server inside the cluster.
 
 ---
 
