@@ -24,8 +24,8 @@ kubeadm_reset: true
 ansible_user: root
 
 # Versions
-node_exporter_version=0.17.0
-alertmanager_version=0.15.3
+node_exporter_version: 0.17.0
+alertmanager_version: 0.15.3
 
 # Passwords
 dashboard_password:
