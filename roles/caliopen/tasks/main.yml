@@ -1,9 +1,9 @@
 ---
-- import: namespaces_labels.yml
+- include: namespaces_labels.yml
 
-- import: certs.yml
+- include: certs.yml
 
-- import: configs.yml
+- include: configs.yml
 
 - name: create services
   shell: kubectl apply -f {{ yaml_url }}/services/{{ item }}-service.yaml -n {{ prod_namespace }}

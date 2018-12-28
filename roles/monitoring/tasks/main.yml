@@ -8,7 +8,7 @@
     - dashboard
   tags: dashboard
 
-- import: config_pipeline.yml
+- include: config_pipeline.yml
 
 - name: create logging deployments
   shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n monitoring
@@ -17,7 +17,7 @@
     - logstash
   tags: logging
 
-- import: config_prometheus.yml
+- include: config_prometheus.yml
 
 - name: kube-system metric deployments
   shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n {{ prod_namespace }}
