@@ -3,7 +3,7 @@ Description=node exporter service
 
 [Service]
 Restart=always
-ExecStart=/usr/local/sbin/node_exporter --web.listen-address {{ facter_ipaddress_eth0 }}:9100
+ExecStart=/usr/local/sbin/node_exporter --web.listen-address {{ hostvars['lb1']['private_ips'][0] }}:9100
 ExecStop=pkill node_exporter 
 
 [Install]
