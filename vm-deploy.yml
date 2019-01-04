@@ -8,6 +8,16 @@
     - "vm_vars/settings.yaml"
 
   tasks:
+
+  - name: vlan creation
+    gandi_vlan:
+      gandi_api_key: "{{ gandi_api_key }}"
+      name: "{{ vlan_name }}"
+      datacenter: "{{ datacenter }}"
+      gateway: "{{ bastion_ip }}"
+      subnet: "{{ vlan_net }}"
+    tags: vlan
+
   - name: bastion creation
     gandi_vps:
       gandi_api_key: "{{ gandi_api_key }}"
