@@ -5,6 +5,7 @@
     - common
     - kube
     - lb
+    - gateway
   tags:
     - infra
     - bastion

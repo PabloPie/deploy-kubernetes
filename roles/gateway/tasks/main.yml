@@ -1,0 +1,5 @@
+- name: enable ip forwarding
+  shell: sysctl -w net.ipv4.ip_forward=1
+
+- name: enable SNAT
+  shell: iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
