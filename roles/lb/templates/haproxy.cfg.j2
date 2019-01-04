@@ -74,7 +74,7 @@ frontend logstash
 	bind {{ bastion_private_ip }}:5044
 	mode http
 
-	default_backend lmtp_backend
+	default_backend logstash_backend
 
 frontend prometheus
 	bind {{ bastion_private_ip }}:9090
