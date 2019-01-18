@@ -62,11 +62,16 @@ spec:
         - containerPort: 9090
         args:
         - --config.file=/etc/prometheus/prometheus.yml
+        - --storage.tsdb.path=/prometheus-data
         volumeMounts:
+        - name: data-dir
+          mountPath: /prometheus-data
         - mountPath: /etc/prometheus/
           name: config-volume
       restartPolicy: Always
       volumes:
+      - name: data-dir
+        emptyDir: {}
       - name: config-volume
         configMap:
           name: prometheus-config
