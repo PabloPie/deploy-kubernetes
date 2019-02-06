@@ -1,10 +1,12 @@
+workers: 10
 twitter_app_key: {{ twitter_oauth_app_key }}
 twitter_app_secret: {{ twitter_oauth_app_secret }}
 BrokerConfig:
   #messaging system
   nats_url: nats://{{ hostvars['mq1']['private_ips'] }}:4222
   nats_queue: Twitterworkers                             # NATS group queue for workers
-  nats_topic_worker: twitter_worker                      # NATS topic to listen to orders for handling workers (add, update, delete)
+  nats_topic_poller: twitterJobs                         # NATS topic on which to request job from idpoller
+  nats_topic_poller_cache: idCache                       # NATS topic to send orders to idpoller regarding identities management
   nats_topic_direct_message: twitter_dm                  # NATS topic to listen to orders for handling DMs (fetch, send)
   #storage facility
   store_name: cassandra                                  # backend to store raw emails and messages (inbound & outbound)
@@ -43,4 +45,4 @@ BrokerConfig:
     in_topic: inboundTwitter
     # notifications
     NotifierConfig:
-admin_username: admin # username on whose behalf notifiers will act. This admin user must have been created before by other means.
+      admin_username: admin                                # username on whose behalf notifiers will act. This admin user must have been created before by other means.
