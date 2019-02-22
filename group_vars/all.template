@@ -5,6 +5,9 @@ prod_namespace: production
 test_namespace: develop
 
 # Node IPS
+# a list of every private ip from the platform
+all_nodes_ips: "{{ groups['all'] | map('extract', hostvars, ['private_ips']) | sum(None,[]) }}"
+
 gw_private_ip: "{{ hostvars['gw1']['private_ips'][0] }}"
 master_private_ip: "{{ hostvars['master']['private_ips'][0] }}"
 bastion_public_ip: "{{ hostvars['lb1']['public_ips'][0] }}"
