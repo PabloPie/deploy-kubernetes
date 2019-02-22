@@ -1,11 +1,33 @@
-- name: copy logstash config
+- name: copy prometheus config
   template:
-    src: "templates/prometheus.yml"
-    dest: "/etc/caliopen"
+    src: "templates/prometheus.yml.j2"
+    dest: "/etc/caliopen/configs/prometheus.yml"
     owner: "root"
     mode: 0600
   tags: prometheus
 
-- name: create logstash pipeline
-  shell: kubectl create configmap prometheus-config --from-file=/etc/caliopen/prometheus.yml -n monitoring
+- name: create prometheus config
+  shell: kubectl create configmap prometheus-config --from-file=/etc/caliopen/configs/prometheus.yml -n monitoring
+  tags: prometheus
+
+- name: copy alertmanager config
+  template:
+    src: "templates/alertmanager.yml.j2"
+    dest: "/etc/caliopen/configs/alertmanager.yml"
+    owner: "root"
+    mode: 0600
+  tags: prometheus
+
+- name: create alertmanager config
+  shell: kubectl create configmap alertmanager-config --from-file=/etc/caliopen/configs/alertmanager.yml -n monitoring
+  tags: prometheus
+
+- name: copy alertmanager rule files
+  copy: 
+    src: alertmanager_rules
+    dest: /etc/caliopen/alertmanager_rules
+  tags: prometheus
+
+- name: create alertmanager rules
+  shell: kubectl create configmap alertmanager-rules --from-file=/etc/caliopen/alertmanager_rules.yml -n monitoring
   tags: prometheus

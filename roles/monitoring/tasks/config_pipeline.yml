@@ -1,7 +1,7 @@
 - name: copy logstash config
   template:
-    src: "templates/logstash.conf"
-    dest: "/etc/caliopen"
+    src: "templates/logstash.conf.j2"
+    dest: "/etc/caliopen/logstash.conf"
     owner: "root"
     mode: 0600
   tags: logstash

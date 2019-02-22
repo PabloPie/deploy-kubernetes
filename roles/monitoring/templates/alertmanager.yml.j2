@@ -1,0 +1,22 @@
+global:
+  smtp_from: "{{ smtp_from }}"
+  smtp_smarthost: "{{ smtp_smarthost }}"
+  smtp_auth_username: "{{ smtp_auth_username }}"
+  smtp_auth_password: "{{ smtp_auth_password }}
+  smtp_require_tls: true
+
+route:
+  group_by: ['alertname', 'service']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 1h
+  receiver: team-ops
+  routes:
+    - match:
+        severity: critical
+      receiver: team-ops
+
+receivers:
+  - name: 'team-ops'
+    email_configs:
+      - to: "{{ send_to }}

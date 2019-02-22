@@ -29,4 +29,5 @@
   shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n monitoring
   with_items:
     - prometheus
+    - alertmanager
   tags: monitoring

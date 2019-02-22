@@ -1,0 +1,9 @@
+store_targets: "{{ groups['store'] | map('extract', hostvars, ['private_ips']) | sum(None,[]) }}"
+cache_targets: "{{ groups['cache'] | map('extract', hostvars, ['private_ips']) | sum(None,[]) }}"
+mq_targets: "{{ groups['mq'] | map('extract', hostvars, ['private_ips']) | sum(None,[]) }}"
+
+smtp_from: ''
+smtp_smarthost: ''
+smtp_auth_username: ''
+smtp_auth_password: ''
+send_to: ''
