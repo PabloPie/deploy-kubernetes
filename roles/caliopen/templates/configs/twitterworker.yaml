@@ -20,7 +20,7 @@ BrokerConfig:
     raw_size_limit: 1048576                                 # max size in bytes for objects in db. Use S3 interface if larger.
     object_store: s3
     object_store_settings:
-      endpoint: {{ hostvars['object_store1']['private_ips'] }}:9000
+      endpoint: {{ hostvars['object-store1']['private_ips'] }}:9000
       access_key: {{ object_store_access_key }}
       secret_key: {{ object_store_secret_key }}
       location: eu-fr-paris                                # S3 region.
