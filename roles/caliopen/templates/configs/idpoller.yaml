@@ -1,7 +1,9 @@
 #polling config
-scan_interval: 15                               # in minutes. How often storage is scanned to retrieve and cache remote identities data
-remote_types:                                   # which kind of remote identities poller must handle
+scan_interval: 180                              # in minutes. How often storage is scanned to sync with remote identities data
+remote_protocols:                               # which kind of remote protocols poller must handle
+  - email
   - imap
+  - twitter
 #storage facility
 store_name: cassandra                           # backend for remote identities data
 store_settings:
@@ -13,5 +15,8 @@ store_settings:
   consistency_level: 1
 #messaging system
 nats_url: nats://{{ hostvars['mq1']['private_ips'][0] }}:4222
-nats_topics:                                    # NATS topics for each kind of remote identities
-  imap: IMAPfetcher
+nats_queue : IDpoller
+nats_topics:                                 # NATS topics to work with
+  id_cache: idCache                          # receiving orders to update poller's cache
+  imap: imapJobs                             # receiving requests for IMAP jobs
+  twitter: twitterJobs                       # receiving requests for Twitter jobs
