@@ -28,8 +28,8 @@ store_settings:
   use_vault: true
   vault_settings:
     url: https://vault.{{ caliopen_domain_name }}:8200
-    username: {{ vault_api_username }}
-    password: {{ vault_api_password }}
+    username: {{ vault_worker_username }}
+    password: {{ vault_worker_password }}
 LDAConfig:
   broker_type: imap                                      # types are : smtp, imap, mailboxe, etc.
   lda_workers_size: 2                                    # number of concurrent workers
