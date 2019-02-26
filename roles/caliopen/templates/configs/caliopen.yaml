@@ -70,6 +70,7 @@ object_store:
     buckets:
         raw_messages: caliopen-raw-messages
         temporary_attachments: caliopen-tmp-attachments
+        learn_models: learn-models
 
 system:
     default_tags:
