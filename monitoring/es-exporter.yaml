@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: es-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: es-exporter 
+  template:
+    metadata:
+      labels:
+        app: es-exporter
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+      - command:
+        - /bin/elasticsearch_exporter
+        - -web.listen-address=:9114
+        - -es.uri=http://192.168.1.10:9200
+        - -es.all=true
+        image: justwatch/elasticsearch_exporter:1.0.2
+        securityContext:
+          capabilities:
+            drop:
+            - SETPCAP
+            - MKNOD
+            - AUDIT_WRITE
+            - CHOWN
+            - NET_RAW
+            - DAC_OVERRIDE
+            - FOWNER
+            - FSETID
+            - KILL
+            - SETGID
+            - SETUID
+            - NET_BIND_SERVICE
+            - SYS_CHROOT
+            - SETFCAP
+          readOnlyRootFilesystem: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 9114
+          initialDelaySeconds: 30
+          timeoutSeconds: 10
+        name: es-exporter
+        ports:
+        - containerPort: 9114
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 9114
+          initialDelaySeconds: 10
+          timeoutSeconds: 10
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 25m
+            memory: 64Mi
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: es-exporter
+  namespace: monitoring
+  labels:
+    kubernetes.io/name: "es-exporter"
+spec:
+  ports:
+    - name: http
+      port: 9114
+      protocol: TCP
+      targetPort: 9114
+  selector:
+    app: es-exporter
+    type: "ClusterIP"

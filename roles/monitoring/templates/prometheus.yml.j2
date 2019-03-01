@@ -62,10 +62,22 @@ scrape_configs:
     # cassandra cluster
     - targets: [{% for host in store_targets %}'{{ host }}:7070',{% endfor %}]
 
-# - job_name: 'elasticsearch'
-#   scrape_interval: 15s
-#   static_configs:
-#     - targets: ['localhost:9108']
+- job_name: 'elasticsearch'
+  kubernetes_sd_configs:
+    - role: pod
+  tls_config:
+    ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+  bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+  relabel_configs:
+  - source_labels: [__meta_kubernetes_namespace]
+    regex: monitoring
+    action: keep
+  - source_labels: [__meta_kubernetes_pod_label_app]
+    regex: es-exporter
+    action: keep
+  - source_labels: [__meta_kubernetes_pod_container_port_number]
+    regex: 9114
+    action: keep
 
 - job_name: 'cache'
   scrape_interval: 15s
@@ -77,7 +89,6 @@ alerting:
   alertmanagers:
   - kubernetes_sd_configs:
       - role: pod
-    scheme: https
     tls_config:
       ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
     bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
@@ -91,6 +102,6 @@ alerting:
     - source_labels: [__meta_kubernetes_pod_container_port_number]
       regex:
       action: drop
-    
+
 rule_files:
   - /etc/prom-rules/*
