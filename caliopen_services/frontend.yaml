@@ -49,3 +49,19 @@ spec:
               name: frontend-config
               key: api_port
       restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  selector:
+    app: frontend
+  type: NodePort
+  ports:
+  - name: "frontend"
+    port: 4000
+    targetPort: 4000
+    nodePort: 30400

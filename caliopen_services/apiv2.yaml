@@ -62,3 +62,19 @@ spec:
           - key: ca-certificates.crt
             path: ca-certificates.crt
       restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: apiv2
+spec:
+  selector:
+    app: apiv2
+  type: NodePort
+  ports:
+  - name: "apiv2"
+    port: 31415
+    targetPort: 6544
+    nodePort: 31415

@@ -59,3 +59,19 @@ spec:
           - key: swagger.json
             path: swagger.json
       restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: apiv1
+spec:
+  selector:
+    app: apiv1
+  type: NodePort
+  ports:
+  - name: "apiv1"
+    port: 6543
+    targetPort: 6543
+    nodePort: 31416

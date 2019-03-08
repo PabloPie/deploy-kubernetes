@@ -23,6 +23,7 @@ spec:
                 operator: In
                 values:
                 - internal
+      terminationGracePeriodSeconds: 180
       containers:
       - image: public-registry.caliopen.org/caliopen_imap_worker
         imagePullPolicy: Always

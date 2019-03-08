@@ -41,3 +41,19 @@ spec:
           - key: lmtp.yaml
             path: lmtp.yaml
       restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: lmtpd
+spec:
+  selector:
+    app: lmtpd
+  type: NodePort
+  ports:
+  - name: "lmtpd"
+    port: 2525
+    targetPort: 2525
+    nodePort: 32525
