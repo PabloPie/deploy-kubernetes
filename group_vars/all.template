@@ -1,8 +1,7 @@
 # Kube data
 # Can be generated with kubeadm
 kube_token:
-prod_namespace: production
-test_namespace: develop
+kube_namespace: test
 
 # Node IPS
 # a list of every private ip from the platform

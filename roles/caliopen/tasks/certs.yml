@@ -13,5 +13,5 @@
   tags: ca-certs
 
 - name: create cert configmap
-  shell: kubectl create configmap ca-certs --from-file=/etc/caliopen/certs -n {{ prod_namespace }}
+  shell: kubectl create configmap ca-certs --from-file=/etc/caliopen/certs -n {{ kube_namespace }}
   tags: ca-certs
