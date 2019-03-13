@@ -13,7 +13,7 @@
   tags: config
 
 - name: create caliopen configs
-  shell: kubectl create configmap {{ name }}-config --from-file={{ name }}.{{ ext }} -n {{ prod_namespace }}
+  shell: kubectl create configmap {{ name }}-config --from-file={{ name }}.{{ ext }} -n {{ kube_namespace }}
   with_items:
     - { name: "apiv1", ext: "ini"}
     - { name: "apiv2", ext: "yaml"}
@@ -27,7 +27,7 @@
   tags: config
 
 - name: create frontend configmap
-  shell: kubectl create configmap frontend-config --from-literal=api_hostname=api.{{ caliopen_domain_name }} --from-literal=api_protocol=https --from-literal=api_port=443 -n {{ prod_namespace }}
+  shell: kubectl create configmap frontend-config --from-literal=api_hostname=api.{{ caliopen_domain_name }} --from-literal=api_protocol=https --from-literal=api_port=443 -n {{ kube_namespace }}
   tags: config
 
 - name: create system configs

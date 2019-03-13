@@ -1,8 +1,5 @@
 - name: create production namespace
-  shell: kubectl create namespace {{ item }}
-  with_items:
-    - "{{ prod_namespace }}"
-    - "{{ test_namespace }}"
+  shell: kubectl create namespace {{ kube_namespace }}
   tags: namespace
 
 - name: label internal nodes

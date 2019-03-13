@@ -6,7 +6,7 @@
 - include: configs.yml
 
 - name: create go app deployments
-  shell: kubectl apply -f {{ yaml_url }}/caliopen_services/{{ item }}.yaml -n {{ prod_namespace }}
+  shell: kubectl apply -f {{ yaml_url }}/caliopen_services/{{ item }}.yaml -n {{ kube_namespace }}
   with_items:
     - lmtpd
     - apiv2
@@ -16,14 +16,14 @@
   tags: [ go, deployment ]
 
 - name: create python app deployments
-  shell: kubectl apply -f {{ yaml_url }}/caliopen_services/{{ item }}.yaml -n {{ prod_namespace }}
+  shell: kubectl apply -f {{ yaml_url }}/caliopen_services/{{ item }}.yaml -n {{ kube_namespace }}
   with_items:
     - mq-worker
     - apiv1
   tags: [ python, deployment ]
 
 - name: create frontend app deployments
-  shell: kubectl apply -f {{ yaml_url }}/caliopen_services/{{ item }}.yaml -n {{ prod_namespace }}
+  shell: kubectl apply -f {{ yaml_url }}/caliopen_services/{{ item }}.yaml -n {{ kube_namespace }}
   with_items:
     - frontend
   tags: [ frontend, deployment ]
