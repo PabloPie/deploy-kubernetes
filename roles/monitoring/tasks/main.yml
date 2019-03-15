@@ -20,7 +20,7 @@
 - include: config_prometheus.yml
 
 - name: kube-system metric deployments
-  shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n {{ prod_namespace }}
+  shell: kubectl apply -f {{ yaml_url }}/monitoring/{{ item }}.yaml -n {{ kube_namespace }}
   with_items:
     - metrics-server
   tags: monitoring
