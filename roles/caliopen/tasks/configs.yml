@@ -1,5 +1,7 @@
 - name: Ensures {{ caliopen_config_path }} dir exists
-  file: path={{ caliopen_config_path }} state=directory
+  file: 
+    path: "{{ caliopen_config_path }}"
+    state: directory
   tags: config
 
 - name: copy caliopen configs
@@ -34,4 +36,5 @@
   shell: kubectl apply -f {{ yaml_url }}/configs/{{ item }}-config.yaml
   with_items:
     - coredns
+    - redis
   tags: [ config, system ]

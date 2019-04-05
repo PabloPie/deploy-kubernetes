@@ -28,6 +28,7 @@ ansible_user: root
 # Versions
 node_exporter_version: 0.17.0
 alertmanager_version: 0.15.3
+docker_version: TBD #not used
 
 # Passwords
 dashboard_password:
