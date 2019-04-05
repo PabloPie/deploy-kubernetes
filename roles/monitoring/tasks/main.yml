@@ -30,4 +30,6 @@
   with_items:
     - prometheus
     - alertmanager
+    - es-exporter
+    - node-exporter
   tags: monitoring
