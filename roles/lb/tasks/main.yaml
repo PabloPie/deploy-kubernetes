@@ -1,16 +1,25 @@
 - name: install haproxy
-  apt: package={{ item }} state=installed update_cache=yes
+  apt:
+    package: {{ item }}
+    state: installed
+    update_cache: yes
   with_items:
     - haproxy
 
 - name: copy config file
-  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
 
 - name: Ensures haproxy certs dir exists
-  file: path=/etc/haproxy/certs state=directory
+  file:
+    path: /etc/haproxy/certs
+    state: directory
 
 - name: install ssl certificate and private key
-  copy: src={{ item }} dest=/etc/haproxy/certs/{{ item }}
+  copy:
+    src: "{{ item }}"
+    dest: /etc/haproxy/certs/{{ item }}
   with_items:
     - "{{ caliopen_domain_name }}.crt"
     - "{{ caliopen_domain_name }}.key"
@@ -26,11 +35,3 @@
     name: haproxy
     state: restarted
 
-- name: install node exporter service
-  template: src=node-exporter.service.j2 dest=/etc/systemd/system/node-exporter.service
-  tags: node-exporter
-
-- name: start node-exporter service
-  service:
-    name: node-exporter
-    state: started

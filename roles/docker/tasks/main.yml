@@ -1,5 +1,8 @@
 - name: install dependencies
-  apt: package={{ item }} state=installed update_cache=yes
+  apt:
+    package: {{ item }}
+    state: installed
+    update_cache: yes
   with_items:
     - apt-transport-https
     - ca-certificates
@@ -18,7 +21,9 @@
     state: present
 
 - name: install docker ce
-  apt: package={{ item }} update_cache=yes
+  apt:
+    package: {{ item }}
+    update_cache: yes
   with_items:
     - docker-ce=17.03.3~ce-0~ubuntu-xenial
 
