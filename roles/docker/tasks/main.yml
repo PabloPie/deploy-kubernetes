@@ -1,6 +1,6 @@
 - name: install dependencies
   apt:
-    package: {{ item }}
+    package: "{{ item }}"
     state: installed
     update_cache: yes
   with_items:
@@ -22,10 +22,10 @@
 
 - name: install docker ce
   apt:
-    package: {{ item }}
+    package: "{{ item }}"
     update_cache: yes
   with_items:
-    - docker-ce=17.03.3~ce-0~ubuntu-xenial
+    - docker-ce={{ docker_version }}
 
 - name: add user to group docker
   command: usermod -aG docker {{ ansible_user }}

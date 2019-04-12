@@ -1,5 +1,8 @@
 - name: install dependencies
-  apt: package={{ item }} state=installed update_cache=yes
+  apt:
+    package: "{{ item }}"
+    state: installed
+    update_cache: yes
   with_items:
     - apt-transport-https
     - curl
@@ -16,6 +19,8 @@
     state: present
 
 - name: install kube utilities
-  apt: package={{ item }} update_cache=yes
+  apt:
+    package: "{{ item }}"
+    update_cache: yes
   with_items:
-    - kubectl
+    - kubectl={{ kubernetes_version }}

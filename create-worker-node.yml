@@ -1,0 +1,44 @@
+- name: create new worker node
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - "vm_vars/credentials.yaml"
+    - "vm_vars/settings.yaml"
+  vars:
+    # redefine any VM variables that you want to override
+    worker_name: node4
+    ip: "{{ base_net }}.137" ## Important to set this up to a non taken ip within the vlan
+
+  tasks:
+
+  - name: worker creation
+    gandi_vps:
+      gandi_api_key: "{{ gandi_api_key }}"
+      name: "{{ worker_name }}"
+      image: "{{ image }}"
+      machine_type: custom
+      datacenter: "{{ datacenter }}"
+      sshkey_ids:
+        - "{{ gandi_ssh_key_id }}"
+      cores: "{{ node_cpu }}"
+      memory: "{{ node_mem }}"
+      disk: "{{ node_disk }}"
+      interfaces: {'privates': [{'vlan': "{{ vlan_name }}", 'ipv4': "{{ ip }}"}]}
+      state: running
+      farm: worker
+    tags:
+      - worker
+
+- name: bootstrap kubernetes worker 
+  vars:
+    #kube_token: # Generate a token
+    #kubernetes_version: #if the version differs from the global one
+  hosts: node4 #Rename to ${worker_name}
+  roles:
+    - common
+    - docker
+    - kube
+    - worker
+    

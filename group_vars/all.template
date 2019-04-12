@@ -26,7 +26,8 @@ kubeadm_reset: true
 ansible_user: root
 
 # Versions
-node_exporter_version: 0.17.0
+kubernetes_version: "1.13.2-00"
+docker_version: "17.03.3~ce-0~ubuntu-xenial"
 alertmanager_version: 0.15.3
 docker_version: TBD #not used
 

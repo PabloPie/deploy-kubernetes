@@ -2,10 +2,13 @@
   command: swapoff -a
 
 - name: install kube utilities
-  apt: package={{ item }} update_cache=yes
+  apt:
+    package: "{{ item }}"
+    update_cache: yes
   with_items:
-    - kubelet
-    - kubeadm
+    #- kubernetes-cni=0.6.0-00 # Temporary requirement if using kubernetes version 1.13.2
+    - kubeadm={{ kubernetes_version }}
+    - kubelet={{ kubernetes_version }}
 
 - name: reset before join
   command: kubeadm reset --force

@@ -1,7 +1,4 @@
 ---
-
-- include: node_exporter.yml
-
 - name: copy ssh keys
   copy:
     src: files/ssh_authorized_keys
@@ -22,5 +19,3 @@
   apt:
     update_cache: yes
     upgrade: dist
-
-
