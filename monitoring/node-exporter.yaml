@@ -42,11 +42,11 @@ spec:
               readOnly: true
           resources:
             limits:
-              cpu: 10m
-              memory: 50Mi
+              cpu: 100m
+              memory: 200Mi
             requests:
-              cpu: 10m
-              memory: 50Mi
+              cpu: 50m
+              memory: 100Mi
       hostNetwork: true
       hostPID: true
       volumes:
