@@ -1,0 +1,12 @@
+apiVersion: nats.io/v1alpha2
+kind: NatsCluster
+metadata:
+  name: caliopen-nats
+  namespace: communication
+spec:
+  size: 1
+  version: "1.4.1"
+  pod:
+    enableMetrics: true
+    metricsImage: "synadia/prometheus-nats-exporter"
+    metricsImageTag: "0.2.0"
