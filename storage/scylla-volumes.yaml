@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: node0-scylla-disk
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: scylladb-storage
+  local:
+    path: /srv/scylla-db0
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+              - node0
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: node1-scylla-disk
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: scylladb-storage
+  local:
+    path: /srv/scylla-db1
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+              - node1
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: node2-scylla-disk
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: scylladb-storage
+  local:
+    path: /srv/scylla-db2
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+              - node2
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: node3-scylla-disk
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: scylladb-storage
+  local:
+    path: /srv/scylla-db3
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+              - node3
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: node4-scylla-disk
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: scylladb-storage
+  local:
+    path: /srv/scylla-db4
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+              - node4
+---
+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: scylladb-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
