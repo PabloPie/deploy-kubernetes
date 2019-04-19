@@ -33,11 +33,7 @@ For now the cluster must be deployed with an external Postfix server.
 
 ### Storage
 
-The cluster must be deployed with external Cassandra, Minio, Elasticsearch and Redis clusters.
-
-### Message queue
-
-Currently, playbooks do not deploy the NATS server inside the cluster.
+The cluster must be deployed with external Cassandra, Minio and Elasticsearch clusters.
 
 ---
 
