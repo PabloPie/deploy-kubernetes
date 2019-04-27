@@ -40,7 +40,7 @@ elasticsearch:
 
 
 cassandra:
-    keyspace: caliopen
+    keyspace: {{ caliopen_cassandra_keyspace }}
     hosts:
 {% for host in groups['store'] %}
       - {{ hostvars[host]['private_ips'][0] }}
@@ -58,19 +58,19 @@ broker:
 
 message_queue:
     port: 4222
-    host: {{ hostvars['mq1']['private_ips'][0] }}
+    host: {{ nats_host }}
 
 object_store:
     db_size_limit: 1048576
     service: s3
-    endpoint: {{ hostvars['object-store1']['private_ips'][0] }}:9000
+    endpoint: {{ object_store_host }}:9000
     access_key: {{ object_store_access_key }}
     secret_key: {{ object_store_secret_key }}
     location: eu-fr-paris
     buckets:
-        raw_messages: caliopen-raw-messages
-        temporary_attachments: caliopen-tmp-attachments
-        learn_models: learn-models
+        raw_messages: {{ caliopen_bucket_raw_message }}
+        temporary_attachments: {{ caliopen_bucket_tmp_attachment }}
+        learn_models: {{ caliopen_bucket_learn_model }}
 
 system:
     default_tags:
@@ -86,12 +86,10 @@ system:
             label: Caliopen
             importance_level: 2
 
-default_domain: alpha.caliopen.org
+default_domain: {{ caliopen_domain_name }}
 
 internal_domains:
-    - caliopen.local
-    - alpha.caliopen.org
-    - beta.caliopen.org
+    - {{ caliopen_domain_name }}
 
 blacklistes:
     mx:
