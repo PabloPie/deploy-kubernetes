@@ -15,16 +15,16 @@ AppConfig:
     tls_always_on: false
     max_clients: 1000
   #submit is the MTA to connect to for final delivery (postfix for example)
-  submit_address: mail1.local   # XXX hardcoded, can't use list
+  submit_address: {{ smtp_out_host }}   # XXX hardcoded, can't use list
   submit_port: 587
-  submit_user:
-  submit_password:
+  submit_user: {{ smtp_out_user }}
+  submit_password: {{ smtp_out_password }}
   submit_workers: 2                                      # number of concurrent connexions to submit MTA
 
 ## LDA (Email broker) config ##
 LDAConfig:
   broker_type: smtp                                      # types are : smtp, imap, mailboxe, etc.
-  nats_url: nats://{{ hostvars['mq1']['private_ips'][0] }}:4222
+  nats_url: nats://{{ nats_host }}:4222
   nats_queue: SMTPqueue                                  # NATS group queue for nats subscribers to share jobs
   store_name: cassandra                                  # backend to store raw emails and messages (inbound & outbound)
   store_settings:
@@ -32,18 +32,18 @@ LDAConfig:
 {% for host in groups['store'] %}
       - {{ hostvars[host]['private_ips'][0] }}
 {% endfor %}
-    keyspace: caliopen
+    keyspace: {{ caliopen_cassandra_keyspace }}
     consistency_level: 1
     raw_size_limit: 1048576                              # max size in bytes for objects in db. Use S3 interface if larger.
     object_store: s3
     object_store_settings:
-      endpoint: {{ hostvars['object-store1']['private_ips'][0] }}:9000
+      endpoint: {{ object_store_host }}:9000
       access_key: {{ object_store_access_key }}
       secret_key: {{ object_store_secret_key }}
       location: eu-fr-paris
       buckets:
-        raw_messages: caliopen-raw-messages                # bucket name to put raw messages to
-        temporary_attachments: caliopen-tmp-attachments    # bucket name to store draft attachments
+        raw_messages: {{ caliopen_bucket_raw_message }}               # bucket name to put raw messages to
+        temporary_attachments: {{ caliopen_bucket_tmp_attachment }}   # bucket name to store draft attachments
     use_vault: true
     vault_settings:
       url: https://vault.{{ caliopen_domain_name }}:8200
