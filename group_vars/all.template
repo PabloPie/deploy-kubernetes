@@ -15,6 +15,7 @@ node0_private_ip: "{{ hostvars['node0']['private_ips'][0] }}"
 node1_private_ip: "{{ hostvars['node1']['private_ips'][0] }}"
 node2_private_ip: "{{ hostvars['node2']['private_ips'][0] }}"
 node3_private_ip: "{{ hostvars['node3']['private_ips'][0] }}"
+node4_private_ip: "{{ hostvars['node4']['private_ips'][0] }}"
 
 # Caliopen related configuration main variables
 caliopen_config_path: "/etc/caliopen/configs"
