@@ -35,7 +35,7 @@ defaults
 userlist admin
 	user caliope-dashboard password {{ dashboard_password }}
 
-##### Frontends
+### FRONTENDS ###
 
 frontend http
 	mode http
@@ -51,38 +51,62 @@ frontend caliopen
 	option http-server-close
 	http-request set-header X-Client-IP %[src]
 
+	# Ingress managed domain, HAProxy acts only as SSL termination
+	acl caliopenapp ssl_fc_sni_end -i caliopen.app
+
 	acl frontend ssl_fc_sni -i web.{{ caliopen_domain_name }}
 	acl api ssl_fc_sni -i api.{{ caliopen_domain_name }}
 	acl apiv2 path_beg -i /api/v2
 	acl apiv1 path_beg -i /api/v1
 	acl dashboard ssl_fc_sni -i dash.{{ caliopen_domain_name }}
 
-	# apiv2 has to go first so it matches first
+	use_backend caliopenapp_back if caliopenapp
+
 	use_backend apiv2_back if api apiv2
 	use_backend apiv1_back if api apiv1
 	use_backend frontend_back if frontend
 	use_backend dashboard_back if dashboard
 
-# Only visible within the private VLAN
+### Only visible within the private VLAN
+## Used by SMTP
+frontend redis
+	bind {{ bastion_private_ip }}:6379
+	mode tcp
+
+	default_backend redis_backend
+
+# Production lmtp
 frontend lmtp
 	bind {{ bastion_private_ip }}:2525
 	mode tcp
 
 	default_backend lmtp_backend
 
-frontend logstash
-	bind {{ bastion_private_ip }}:5044
-	mode http
+# Staging lmtp
+	bind {{ bastion_private_ip }}:22525
+	mode tcp
 
-	default_backend logstash_backend
+	default_backend lmtp_staging_backend
 
+# Used by Grafana, will be deleted when moved into the cluster
 frontend prometheus
 	bind {{ bastion_private_ip }}:9090
 	mode http
 
 	default_backend prom_backend
 
-##### Backends
+### BACKENDS ###
+
+# Ingress controller backend, no https
+backend caliopenapp_back
+	# Ingress routes based on Host header
+	http-request set-header Host %[ssl_fc_sni]
+	mode http
+
+	server node0 {{ node0_private_ip }}:30080
+	server node1 {{ node1_private_ip }}:30080 backup
+
+## Backends exposed through NodePorts
 
 backend frontend_back
 	mode http
@@ -107,7 +131,7 @@ backend apiv1_back
 backend apiv2_back
 	mode http
 	balance roundrobin
-	option httpchk
+	option httpchk GET username/isAvailable
 	http-check expect ! rstatus ^5
 
     server node0  {{ node0_private_ip }}:31415 check
@@ -127,7 +151,10 @@ backend dashboard_back
     server node1  {{ node1_private_ip }}:31045 check
     server node2  {{ node2_private_ip }}:31045 check
     server node3  {{ node3_private_ip }}:31045 check
+    server node4  {{ node4_private_ip }}:31045 check
     server master {{ master_private_ip }}:31045 check backup
+
+## Internal backends
 
 backend lmtp_backend
 	mode tcp
@@ -136,16 +163,18 @@ backend lmtp_backend
 
     server node2  {{ node2_private_ip }}:32525 check
     server node3  {{ node3_private_ip }}:32525 check
+    server node4  {{ node4_private_ip }}:32525 check
     server master {{ master_private_ip }}:32525 check backup
 
-backend logstash_backend
-	mode http
+backend lmtp_staging_backend
+	mode tcp
 	balance roundrobin
-	option httpchk
+	option smtpchk
 
-    server node2  {{ node2_private_ip }}:30544 check
-    server node3  {{ node3_private_ip }}:30544 check
-    server master {{ master_private_ip }}:30544 check backup
+    server node2  {{ node2_private_ip }}:32225 check
+    server node3  {{ node3_private_ip }}:32225 check
+    server node4  {{ node4_private_ip }}:32525 check
+    server master {{ master_private_ip }}:32225 check backup
 
 backend prom_backend
 	mode http
@@ -153,5 +182,15 @@ backend prom_backend
 	option httpchk
 
     server node2  {{ node2_private_ip }}:31090 check
-    server node3  {{ node3_private_ip }}:31090 check
+    server node3  {{ node3_private_ip }}:31090 check backup
+    server node4  {{ node4_private_ip }}:31090 check backup
     server master {{ master_private_ip }}:31090 check backup
+
+backend redis_backend
+	mode tcp
+	balance roundrobin
+
+	server node2  {{ node2_private_ip }}:31379 check
+	server node3  1{{ node3_private_ip }}:31379 check backup
+    server node4  {{ node4_private_ip }}:31379 check backup
+	server master {{ master_private_ip }}:31379 check backup
