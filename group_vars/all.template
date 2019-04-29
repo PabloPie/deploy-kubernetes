@@ -32,6 +32,8 @@ caliopen_bucket_learn_model: "caliopen-learn-model"
 redis_host: "{{ hostvars['cache1']['private_ips'][0] }}"
 nats_host: "{{ hostvars['mq1']['private_ips'][0] }}"
 object_store_host: "{{ hostvars['object-store1']['private_ips'][0] }}"
+vault_host: "vault.{{ caliopen_domain_name }}"
+vault_port: "8200"
 
 # Smtp out
 smtp_out_host: "mail1.local"
