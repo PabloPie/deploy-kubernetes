@@ -90,7 +90,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - node3
+                - node2
 
 ---
 
@@ -114,13 +114,14 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: prom-persistent
+  namespace: monitoring
 spec:
   accessModes:
     - ReadWriteOnce
   volumeMode: Filesystem
   resources:
     requests:
-      storage: 7Gi
+      storage: 15Gi
   storageClassName: metrics-storage
 
 ---
@@ -141,14 +142,14 @@ metadata:
   namespace: monitoring
 spec:
   capacity:
-    storage: 7Gi
+    storage: 15Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: metrics-storage
   local:
-    path: /etc/caliopen/prometheus-pv
+    path: /srv/prom-metrics
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -156,4 +157,4 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-            - node3
+            - node2
