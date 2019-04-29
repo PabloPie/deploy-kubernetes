@@ -46,7 +46,7 @@ LDAConfig:
         temporary_attachments: {{ caliopen_bucket_tmp_attachment }}   # bucket name to store draft attachments
     use_vault: true
     vault_settings:
-      url: https://vault.{{ caliopen_domain_name }}:8200
+      url: https://{{ vault_host }}:{{ vault_port }}
       username: {{ vault_lmtp_username }}
       password: {{ vault_lmtp_password }}
   index_name: elasticsearch                              # backend to index messages (inbound & outbound)
