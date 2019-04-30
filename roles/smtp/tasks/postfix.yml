@@ -1,0 +1,47 @@
+---
+- name: Remove exim4 and sendmail MTAs
+  apt:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - exim4
+    - sendmail
+
+- name: Configure debconf
+  debconf:
+    name: "{{ item.name }}"
+    question: "{{ item.question }}"
+    value: "{{ item.value }}"
+    vtype: "{{ item.vtype }}"
+  with_items: "{{ postfix_debconf_selections }}"
+
+- name: Install postfix
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+    cache_valid_time: 3600
+  with_items: "{{ postfix_install }}"
+  environment:
+    # prevent postfix from autostart after installation
+    RUNLEVEL: 1
+
+- name: postfix certificate directory
+  file:
+    path: /etc/postfix/certs
+    state: directory
+
+- name: install tls certificate and private key
+  copy: src={{ item }} dest=/etc/postfix/certs/{{ item }}
+  with_items:
+    - "{{ postfix_domain }}.crt"
+    - "{{ postfix_domain }}.key"
+
+# plays postfix configuration tasks
+- include: config_postfix.yml
+
+- name: Ensure postfix is started and enabled at boot.
+  service:
+    name: postfix
+    state: started
+    enabled: yes

@@ -1,0 +1,50 @@
+---
+- name: new aliases
+  command: newaliases
+
+- name: new virtual aliases
+  command: postmap /etc/postfix/virtual
+
+- name: postmap sasl_passwd
+  command: postmap hash:/etc/postfix/sasl_passwd
+
+- name: postmap sender_canonical_maps
+  command: postmap hash:/etc/postfix/sender_canonical_maps
+
+- name: postmap generic
+  command: postmap hash:/etc/postfix/generic
+
+- name: start postfix
+  service:
+    name: postfix
+    state: started
+
+- name: stop postfix
+  service:
+    name: postfix
+    state: stopped
+
+- name: restart postfix
+  service:
+    name: postfix
+    state: restarted
+
+- name: reload postfix
+  service:
+    name: postfix
+    state: reloaded
+
+- name: restart amavis
+  service: name=amavisd-new state=restarted
+
+- name: restart amavisd-milter
+  service: name=amavisd-milter state=restarted
+
+- name: Restart OpenDKIM
+  service: name=opendkim state=restarted
+
+- name: restart rspamd
+  service:
+    name: rspamd
+    state: retarted
+

@@ -37,3 +37,10 @@
     - caliopen
     - monitoring
   tags: application
+
+- hosts: mail
+  become: yes
+  remote_user: root
+  roles:
+    # - common
+    - smtp

@@ -1,0 +1,84 @@
+# {{ ansible_managed }}
+
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+# INTERNET HOST AND DOMAIN NAMES
+################################
+myhostname = {{ postfix_hostname | join(' ') }}
+mydomain = $myhostname
+myorigin = $myhostname
+mydestination = {{ postfix_mydestination | join(' ') }}
+smtpd_banner = $myhostname ESMTP $mail_name
+mynetworks = {{ postfix_mynetworks | join(' ') }}
+
+# TLS parameters
+################
+smtpd_tls_key_file = /etc/postfix/certs/{{ caliopen_domain_name }}.key
+smtpd_tls_cert_file = /etc/postfix/certs/{{ caliopen_domain_name }}.crt
+## yes if you want to write tls info in email's headers
+smtpd_tls_received_header = yes
+smtpd_tls_protocols = TLSv1.2
+smtpd_tls_exclude_ciphers = aNULL, DES, 3DES, MD5, DES+MD5, RC4
+##NB: smtpd tls is enforced in master.cf
+smtp_tls_security_level = may
+##log tls infos in /var/log/maillog
+smtp_tls_loglevel = 1
+smtpd_tls_loglevel = 1
+
+# JUNK MAIL CONTROLS
+####################
+smtpd_delay_reject = yes
+smtpd_client_restrictions = permit_sasl_authenticated,
+    permit_mynetworks,
+    reject_rbl_client sbl-xbl.spamhaus.org,
+    reject_rbl_client zen.spamhaus.org
+
+smtpd_helo_required = yes
+smtpd_helo_restrictions = permit_mynetworks,
+    reject_non_fqdn_helo_hostname,
+    reject_invalid_helo_hostname,
+    reject_rhsbl_helo dbl.spamhaus.org
+
+smtpd_relay_restrictions = permit_mynetworks
+smtpd_recipient_restrictions = permit_mynetworks,
+    reject_unauth_pipelining,
+    reject_non_fqdn_recipient,
+    reject_unknown_sender_domain,
+    reject_unknown_recipient_domain,
+    reject_unauth_destination,
+    reject_unlisted_recipient
+
+smtpd_sender_restriction = permit_mynetworks
+
+# REJECTING MAIL FOR UNKNOWN LOCAL USERS
+########################################
+unknown_local_recipient_reject_code = 550
+
+# TRUST AND RELAY CONTROL
+#########################
+mynetworks_style = host
+
+#MILTERS
+#########
+# Milters for mail that arrives via the smtpd(8) server.
+# smtpd_milters = inet:localhost:11332
+non_smtpd_milters = unix:/var/run/opendkim/opendkim.sock
+
+# What to do in case of errors? Specify accept, reject, tempfail,
+# or quarantine (Postfix 2.6 or later).
+milter_default_action = accept
+
+#FINAL DELIVERY PROCESS
+#######################
+### all emails go to our local smtp
+#
+virtual_mailbox_domains = {{ postfix_domain }}
+virtual_mailbox_maps =
+virtual_transport = {{ postfix_virtual_transport }}
+# the lookup below will be ignored but file must be present
+alias_database = hash:/etc/postfix/aliases
+message_size_limit = {{ postfix_message_size_limit }}
+
+# Disable the SMTP VRFY command. This stops some techniques used to harvest email addresses.
+disable_vrfy_command = {{ postfix_disable_vrfy_command }}
+

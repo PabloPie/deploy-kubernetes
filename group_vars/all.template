@@ -40,6 +40,10 @@ smtp_out_host: "mail1.local"
 smtp_out_user: ""
 smtp_out_password: ""
 
+# TODO : For the moment IP address of haproxy load balancer
+lmtp_host: "{{ hostvars['lb1']['private_ips'][0] }}"
+lmtp_port: 2525
+
 
 # Options
 kubeadm_reset: true

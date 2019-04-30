@@ -1,0 +1,21 @@
+Syslog              yes
+LogResults          yes
+LogWhy              yes
+SyslogSuccess       yes
+UMask               002
+Canonicalization    relaxed/relaxed
+
+# Only sign, do not verify (verification takes over Amavis)
+Mode                s
+
+KeyTable            /etc/opendkim/keytable
+SigningTable        refile:/etc/opendkim/signingtable
+InternalHosts        /etc/opendkim/trustedhosts
+
+AlwaysAddARHeader   yes
+
+Diagnostics         yes
+
+Keyfile             /etc/opendkim/keys/{{ milter_dkim_selector }}.private
+Selector            {{ milter_dkim_selector }}
+

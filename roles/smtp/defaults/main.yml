@@ -1,0 +1,40 @@
+---
+# defaults for postfix
+postfix_domain: "{{ caliopen_domain_name }}"
+postfix_install:
+  - postfix
+  - mailutils
+postfix_hostname:
+  - "{{ ansible_hostname }}.{{ caliopen_domain_name }}"
+postfix_mailname:
+  - "{{ ansible_hostname }}.{{ caliopen_domain_name }}"
+postfix_inet_interface: "{{ ansible_host }}"
+postfix_mydestination:
+  - "{{ postfix_hostname | join(' ') }}"
+  - localdomain
+  - localhost
+  - localhost.localdomain
+postfix_mynetworks:
+  - "192.168.1.32/29" # smtp subnet
+  - "192.168.1.16/29" # lmtp subnet
+postfix_smtpd_banner: '$myhostname ESMTP $mail_name'
+postfix_disable_vrfy_command: "yes"
+postfix_message_size_limit: 20480000
+
+postfix_virtual_domains:
+  - "{{ caliopen_domain_name}}"
+postfix_virtual_transport: "smtp:{{ lmtp_host }}:{{ lmtp_port }}"
+postfix_aliases: []
+
+# defaults for milters
+milter_sql_db:
+milter_sql_host:
+milter_sql_port:
+milter_sql_user:
+milter_sql_user_password:
+
+milter_amavis_socket: "/var/run/amavis/amavisd.sock"
+milter_amavis_milter_socket: "/var/run/amavis/amavisd-milter.sock"
+milter_dkim_keys_dir: /etc/opendkim/keys
+milter_dkim_selector: "{{ caliopen_domain_name }}"
+milter_dkim_group: opendkim

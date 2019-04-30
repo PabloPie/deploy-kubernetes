@@ -1,0 +1,5 @@
+bayes_store_module Mail::SpamAssassin::BayesStore::MySQL
+bayes_sql_dsn DBI:mysql:{{ milter_spamass_db }}:localhost
+bayes_sql_username {{ milter_spamass_user }}
+bayes_sql_password {{ milter_sql_spamass_password }}
+bayes_sql_override_username {{ milter_spamass_user_override }}

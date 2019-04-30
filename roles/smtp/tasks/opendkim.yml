@@ -1,0 +1,74 @@
+---
+
+- name: Install opendkim
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+    force: yes
+  with_items:
+    - opendkim
+    - opendkim-tools
+
+- name: opendkim config
+  template:
+    src: opendkim/opendkim.conf.j2
+    dest: /etc/opendkim.conf
+    owner: root
+    group: "{{ milter_dkim_group }}"
+    mode: 0664
+  notify: Restart OpenDKIM
+
+- name: create opendkim-key directory
+  file:
+    path: "{{ milter_dkim_keys_dir }}"
+    state: directory
+    mode: 0750
+    owner: root
+    group: opendkim
+
+- name: generate dkim-key
+  command: "opendkim-genkey --selector={{ milter_dkim_selector }} --bits=2048 --directory={{ milter_dkim_keys_dir }} --domain={{ caliopen_domain_name }}"
+  args:
+    creates: "/etc/opendkim/keys/{{ milter_dkim_selector }}.private"
+  notify: Restart OpenDKIM
+
+- name: add keytable file
+  template:
+    src: opendkim/keytable.j2
+    dest: /etc/opendkim/keytable
+    owner: root
+    group: root
+    mode: 0644
+
+- name: add signingtable file
+  template:
+    src: opendkim/signingtable.j2
+    dest: /etc/opendkim/signingtable
+    owner: root
+    group: root
+    mode: 0644
+
+- name: add trustedhosts file
+  template:
+    src: opendkim/trustedhosts.j2
+    dest: /etc/opendkim/trustedhosts
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart OpenDKIM
+
+- name: private-key permissions
+  file:
+    path: "/etc/opendkim/keys/{{ milter_dkim_selector }}.private"
+    state: file
+    owner: opendkim
+    group: opendkim
+    mode: 0600
+
+- name: add user postfix to group opendkim
+  user:
+    name: postfix
+    groups: opendkim
+    append: yes
+

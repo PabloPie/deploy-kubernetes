@@ -1,0 +1,41 @@
+---
+- name: configure mailname
+  template:
+    src: postfix/mailname.j2
+    dest: /etc/mailname
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart postfix
+
+- name: add master configuration file
+  template:
+    src: postfix/master.j2
+    dest: /etc/postfix/master.cf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: add main configuration file
+  template:
+    src: postfix/main.j2
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload postfix
+
+- name: configure aliases
+  lineinfile:
+    dest: /etc/aliases
+    regexp: '^{{ item.user }}:.*'
+    line: '{{ item.user }}: {{ item.alias }}'
+    owner: root
+    group: root
+    mode: 0644
+    create: true
+    state: present
+  with_items: "{{ postfix_aliases }}"
+  notify:
+    - new aliases
+    - restart postfix

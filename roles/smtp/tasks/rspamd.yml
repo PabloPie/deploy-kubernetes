@@ -1,0 +1,30 @@
+---
+
+- name: add apt key
+  apt_key:
+    url: https://rspamd.com/apt-stable/gpg.key
+    state: present
+
+- name: Add rspamd apt repo
+  apt_repository:
+    repo: 'deb [arch=amd64] http://rspamd.com/apt-stable/ jessie main'
+    filename: rspamd
+    state: present
+
+- name: Install rspamd
+  apt: 
+    package: "{{ item }}"
+    update_cache: yes
+    install_recommends: no
+  with_items:
+    - rspamd
+
+- name: copy rspamd configs
+  template:
+    src: "{{ item }}"
+    dest: "/etc/rspamd/local.d"
+    owner: "root"
+    mode: 0600
+  with_fileglob:
+    - "templates/rspamd/local.d/*"
+  notify: restart rspamd

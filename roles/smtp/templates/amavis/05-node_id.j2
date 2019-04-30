@@ -1,0 +1,8 @@
+use strict;
+
+# $myhostname is used by amavisd-new for node identification, and it is
+# important to get it right (e.g. for ESMTP EHLO, loop detection, and so on).
+
+$myhostname = "mail.{{ postfix_domain }}";
+
+1;  # ensure a defined return

@@ -1,0 +1,72 @@
+use strict;
+
+##
+## The communication with Amavis should take place via a Unix socket and via the AM.PDP protocol.
+## amavisd-milter provides mail from Postfix via the Milter interface and translates the Milter protocol into the AM.PDP protocol
+## because Amavis itself does not support a Milter protocol.
+## Postfix === Milter protocol ===> Amavisd-Milter === AM.PDP protocol ===> Amavis (and back)
+##
+$protocol = "AM.PDP";
+$unix_socketname = "{{ milter_amavis_socket }}";
+$inet_socket_port = undef;
+
+
+##
+## Policy-Bank for e-mails from mail clients
+## E-mails that enter the mail system through the submission port for mail clients are sent via the Postfix option
+## -o milter_macro_daemon_name = ORIGINATING a "tag" with "ORIGINATING". Amavis is to recognize this "marking"
+## and in this case no spam investigation.
+## Local senders (for example via mailx command) are not affected by the spam scan, since Amavis automatically uses them as
+## such (client 127.0.0.1) can be detected.
+##
+
+$policy_bank{'ORIGINATING'} = {
+    originating => 1,
+    bypass_spam_checks_maps => [1]
+};
+
+
+###
+### For which domains is the mailserver responsible?
+### => statical lookup for now, no SQL
+###
+$mydomain = "{{ postfix_domain }}";
+@local_domains_maps = ( [".$mydomain"] );
+
+## @lookup_sql_dsn = ( ['DBI:mysql:database={{ milter_sql_db }};host={{ milter_sql_host}} ;port={{ milter_sql_port }}', '{{ milter_sql_user }}', '{{ milter_sql_user_password }}'], );
+##
+## $sql_select_policy = 'SELECT "Y" as local, 1 as id FROM domains WHERE CONCAT("@",domain) IN (%k)';
+## $sql_select_white_black_list = undef;
+
+
+##
+## Enable DKIM verification
+## Amavis checks DKIM signatures for incoming e-mails (if available).
+## If the signature is correct, the spam score is corrected downwards.
+
+$enable_dkim_verification = 1;
+
+###
+### Spamassassin settings
+###
+
+### Enable spam checks
+@bypass_spam_checks_maps = (\%bypass_spam_checks, \@bypass_spam_checks_acl, \$bypass_spam_checks_re);
+$sa_tag_level_deflt = -999;         # Informationen zu Spam-Score ab diesem Level (hier: immer) in den Header schreiben
+$sa_tag2_level_deflt = 6.2;         # Ab diesem Level E-Mails als Spam markieren
+$sa_kill_level_deflt = 6.9;         # Ab diesem Level E-Mails nicht annehmen, sondern Aktion in "final_spam_destiny" auslösen (REJECT)
+
+$sa_spam_subject_tag = undef;       # Kein ***SPAM*** in den Betreff schreiben, falls Spam
+$spam_quarantine_to = undef;        # Spam nicht in die Quarantäne verschieben
+$final_spam_destiny = D_REJECT;     # Aktion, wenn kill_level erreicht wurde: E-Mail nicht annehmen und REJECT auslösen
+
+
+###
+### If notification mails are to be sent to users (for example, if the mail is blocked)
+###
+
+$notify_method  = 'smtp:[{{ ansible_eth0.ipv4.address }}]:25';
+
+
+#------------ Do not modify anything below this line -------------
+1;  # ensure a defined return
