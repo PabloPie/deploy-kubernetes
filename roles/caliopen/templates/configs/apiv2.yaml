@@ -10,21 +10,21 @@ ApiConfig:
 {% for host in groups['store'] %}
       - {{ hostvars[host]['private_ips'][0] }}
 {% endfor %}
-      keyspace: caliopen
+      keyspace: {{ caliopen_cassandra_keyspace }}
       consistency_level: 1
       raw_size_limit: 1048576                                # max size in bytes for objects in db. Use S3 interface if larger.
       object_store: s3
       object_store_settings:
-        endpoint: {{ hostvars['object-store1']['private_ips'][0] }}:9000
+        endpoint: {{ object_store_host }}:9000
         access_key: {{ object_store_access_key }}
         secret_key: {{ object_store_secret_key }}
         location: eu-fr-paris
         buckets:
-          raw_messages: caliopen-raw-messages                # bucket name to put raw messages to
-          temporary_attachments: caliopen-tmp-attachments    # bucket name to store draft attachments
+          raw_messages: {{ caliopen_bucket_raw_message }}                # bucket name to put raw messages to
+          temporary_attachments: {{ caliopen_bucket_tmp_attachment }}    # bucket name to store draft attachments
       use_vault: true
       vault_settings:
-        url: https://vault.{{ caliopen_domain_name }}:8200
+        url: https://{{ vault_host }}:{{ vault_port }}
         username: {{ vault_api_username }}
         password: {{ vault_api_password }}
   IndexConfig:
@@ -35,7 +35,7 @@ ApiConfig:
       - http://{{ hostvars[host]['private_ips'][0] }}:9200
 {% endfor %}
   NatsConfig:
-    url: nats://192.168.1.60:4222
+    url: nats://{{ nats_host }}:4222
     outSMTP_topic: outboundSMTP     # topic's name to post "send" draft order
     outIMAP_topic: outboundIMAP     # topic's name for "send" draft order via remote SMTP+IMAP
     outTWITTER_topic: twitter_dm    # topics's name for "send" draft order via TWITTER
@@ -46,7 +46,7 @@ ApiConfig:
 
   swaggerSpec: /etc/caliopen/swagger.json #absolute path or relative path to go.server bin
   RedisConfig:
-    host: 192.168.1.50:6379
+    host: {{ redis_host }}:6379
     password: ""      #no password set
     db: 0             #use default db
   NotifierConfig:

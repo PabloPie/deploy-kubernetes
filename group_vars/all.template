@@ -15,11 +15,31 @@ node0_private_ip: "{{ hostvars['node0']['private_ips'][0] }}"
 node1_private_ip: "{{ hostvars['node1']['private_ips'][0] }}"
 node2_private_ip: "{{ hostvars['node2']['private_ips'][0] }}"
 node3_private_ip: "{{ hostvars['node3']['private_ips'][0] }}"
+node4_private_ip: "{{ hostvars['node4']['private_ips'][0] }}"
 
-# Paths and URLS
+# Caliopen related configuration main variables
 caliopen_config_path: "/etc/caliopen/configs"
 yaml_url: "https://raw.githubusercontent.com/CaliOpen/deploy-kubernetes/master"
 caliopen_domain_name: "beta.caliopen.org"
+caliopen_cassandra_keyspace: "caliopen"
+
+# Object store buckets
+caliopen_bucket_raw_message: "caliopen-raw-message"
+caliopen_bucket_tmp_attachment: "caliopen-tmp-attachment"
+caliopen_bucket_learn_model: "caliopen-learn-model"
+
+# Service name
+redis_host: "{{ hostvars['cache1']['private_ips'][0] }}"
+nats_host: "{{ hostvars['mq1']['private_ips'][0] }}"
+object_store_host: "{{ hostvars['object-store1']['private_ips'][0] }}"
+vault_host: "vault.{{ caliopen_domain_name }}"
+vault_port: "8200"
+
+# Smtp out
+smtp_out_host: "mail1.local"
+smtp_out_user: ""
+smtp_out_password: ""
+
 
 # Options
 kubeadm_reset: true

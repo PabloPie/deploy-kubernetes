@@ -11,10 +11,10 @@ store_settings:
 {% for host in groups['store'] %}
     - {{ hostvars[host]['private_ips'][0] }}
 {% endfor %}
-  keyspace: caliopen
+  keyspace: {{ caliopen_cassandra_keyspace }}
   consistency_level: 1
 #messaging system
-nats_url: nats://{{ hostvars['mq1']['private_ips'][0] }}:4222
+nats_url: nats://{{ nats_host }}:4222
 nats_queue : IDpoller
 nats_topics:                                 # NATS topics to work with
   id_cache: idCache                          # receiving orders to update poller's cache
